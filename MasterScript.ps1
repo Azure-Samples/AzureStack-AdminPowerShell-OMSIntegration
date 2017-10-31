@@ -94,24 +94,24 @@ $info = @{
 }
 
 $infoJson = ConvertTo-Json $info
-Set-Content -Path "C:\Intellistack\info.txt" -Value $infoJson
+Set-Content -Path "C:\AZSAdminOMSInt\info.txt" -Value $infoJson
 
 #store passwords in txt files. 
 $passwordText = $azureStackAdminPasswordSecureString | ConvertFrom-SecureString
-Set-Content -Path "C:\Intellistack\azspassword.txt" -Value $passwordText
+Set-Content -Path "C:\AZSAdminOMSInt\azspassword.txt" -Value $passwordText
 $passwordText = $azurePasswordSecureString | ConvertFrom-SecureString
-Set-Content -Path "C:\Intellistack\azpassword.txt" -Value $passwordText
+Set-Content -Path "C:\AZSAdminOMSInt\azpassword.txt" -Value $passwordText
 
 # Download OMS Ingestion API modules (Testing to remove modules from source)
-cd C:\Intellistack
+cd C:\AZSAdminOMSInt
 mkdir OMSAPI
-Save-Module -Name OMSIngestionAPI -Path "C:\Intellistack\OMSAPI"
+Save-Module -Name OMSIngestionAPI -Path "C:\AZSAdminOMSInt\OMSAPI"
 
 #Download Azure Stack Tools VNext
-cd c:\Intellistack
+cd c:\AZSAdminOMSInt
 invoke-webrequest https://github.com/Azure/AzureStack-Tools/archive/vnext.zip -OutFile vnext.zip
 expand-archive vnext.zip -DestinationPath . -Force
 
 # schedule windows scheduled task
-cd C:\Intellistack
+cd C:\AZSAdminOMSInt
 & .\schedule_usage_upload.ps1
