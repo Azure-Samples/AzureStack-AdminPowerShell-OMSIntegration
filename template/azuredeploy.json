@@ -1,0 +1,297 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "adminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "Username for the Virtual Machine."
+            },
+            "defaultValue": "omsadmin"
+        },
+        "adminPassword": {
+            "type": "securestring",
+            "metadata": {
+                "description": "Password for the Virtual Machine."
+            }
+        },
+        "vmName": {
+            "type": "string", 
+            "metadata": {
+                "description": "Name of Virtual Machine."
+            },
+            "defaultValue": "omsserver"
+        },
+        "TFSToken": {
+            "type": "securestring",
+            "metadata": {
+                "description": "TFS token used to clone scripts from TFS"
+            }
+        },
+        "deploymentGuid": {
+            "type": "string",
+            "metadata": {
+                "description": "The deployment ID that uniquely identifies an individual Azure Stack, can be found by running Get-DeploymentGuid script."
+            }
+        },
+        "cloudName": {
+            "type": "string",
+            "metadata": {
+                "description": "friendly name for the cloud that has the deploymentGuid above. No spaces please. "
+            }
+        },
+        "region": {
+            "type": "string",
+            "metadata": {
+                "description": "region this azure stack instance belongs to. "
+            },
+            "defaultValue": "local"
+        },
+        "omsWorkspace": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the OMS workspace you wish to upload data to."
+            }
+        },
+        "omsResourceGroupName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the Azure resource group that contains the OMS workspace specified."
+            }
+        },
+        "azureStackAdminUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The admin username you used to deploy Azure Stack. e.g. serviceadmin@contoso.onmicrsoft.com"
+            }
+        },
+        "azureStackAdminPassword": {
+            "type": "string",
+            "metadata": {
+                "description": "The password for the service admin account of Azure Stack. "
+            }
+        },
+        "azureUsername": {
+            "type": "string",
+            "metadata": {
+                "description": "The azure account username that contains your OMS resource."
+            }
+        },
+        "azurePassword": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure Account password. "
+            }
+        },
+        "azureSubscription": {
+            "type": "string",
+            "metadata": {
+                "description": "Azure subscription guid where your OMS workspace is under. "
+            }
+        },
+        "FQDN": {
+            "type": "string",
+            "metadata": {
+                "description": "Fully Qualified Domain Name for this Azure Stack. e.g. azurestack.external for ASDK"
+            },
+            "defaultValue": "azurestack.external"
+        },
+        "storageAcctName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the storage account containing MasterScript.ps1. "
+            }
+        },
+        "blobContainerName": {
+            "type": "string",
+            "metadata": {
+                "description": "Name of the blob container you created within the storage account above which contains MasterScript.ps1"
+            }
+        }
+    },
+    "variables": {
+        "location": "[resourceGroup().location]",
+        "OSDiskName": "osdisk",
+        "newStorageAccountName": "[substring(concat('vm',uniquestring(replace(resourceGroup().Id,'-',''))),0,8)]",
+        "storageAccountType": "Standard_LRS",
+        "nicName": "[replace(replace(tolower(concat('nic',resourceGroup().name)), '-', ''), '.','')]",
+        "addressPrefix": "10.0.0.0/24",
+        "subnetName": "[replace(replace(tolower(concat('subnet',resourceGroup().name)), '-', ''), '.','')]",
+        "subnetPrefix": "10.0.0.0/24",
+        "vnetID": "[resourceId('Microsoft.Network/virtualNetworks',variables('virtualNetworkName'))]",
+        "subnetRef": "[concat(variables('vnetID'),'/subnets/',variables('subnetName'))]",
+        "virtualNetworkName":  "[replace(replace(tolower(concat('vnet',resourceGroup().name)), '-', ''), '.','')]",
+        "publicIPAddressName": "[concat(resourceGroup().name,'-ip')]",
+        "dnsNameForPublicIP": "[tolower(concat('dns', uniquestring(resourceGroup().id)))]",
+        "networkSecurityGroupName": "[replace(replace(tolower(concat('nsg',resourceGroup().name)), '-', ''), '.','')]",
+        "vmStorageAccountContainerName": "vhds",
+        "vmSize": "Standard_A1",
+        "scriptFolder": ".",
+        "scriptFileName": "MasterScript.ps1",
+        "scriptParameters": "[concat('-TFSPersonalAccessToken ', parameters('TFSToken'), ' ', '-DeploymentGuid ', parameters('deploymentGuid'), ' ', '-OMSWorkspace ', parameters('omsWorkspace'), ' ', '-OMSResourceGroup ', parameters('omsResourceGroupName'), ' ', '-azureStackAdminUsername ', parameters('azureStackAdminUsername'), ' ', '-azureStackAdminPassword ', parameters('azureStackAdminPassword'), ' ', '-azureUsername ', parameters('azureUsername'), ' ', '-azurePassword ', parameters('azurePassword'), ' ', '-azureSubscription ', parameters('azureSubscription'), ' ', '-CloudName ', parameters('cloudName'), ' ', '-Region ', parameters('region'), ' ', '-Fqdn ', parameters('FQDN'))]",
+        "scriptURI": "[concat('https://', parameters('storageAcctName'), '.blob.', parameters('region'), '.', parameters('Fqdn'), '/', parameters('blobContainerName'), '/', variables('scriptFileName'))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Storage/storageAccounts",
+            "name": "[toLower(variables('newStorageAccountName'))]",
+            "apiVersion": "2015-06-15",
+            "location": "[variables('location')]",
+            "properties": {
+                "accountType": "[variables('storageAccountType')]"
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[variables('virtualNetworkName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "[variables('addressPrefix')]"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "[variables('subnetName')]",
+                        "properties": {
+                            "addressPrefix": "[variables('subnetPrefix')]"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[variables('publicIPAddressName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "publicIPAllocationMethod": "Dynamic",
+                "dnsSettings": {
+                    "domainNameLabel": "[variables('dnsNameForPublicIP')]"
+                }
+            }
+        },
+        {
+            "apiVersion": "2015-05-01-preview",
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "name": "[variables('networkSecurityGroupName')]",
+            "location": "[variables('location')]",
+            "tags": {
+                "displayName": "NetworkSecurityGroup"
+            },
+            "properties": {
+                "securityRules": [
+                {
+                    "name": "default-allow-rdp",
+                    "properties": {
+                        "protocol": "Tcp",
+                        "sourcePortRange": "*",
+                        "destinationPortRange": "3389",
+                        "sourceAddressPrefix": "*",
+                        "destinationAddressPrefix": "*",
+                        "access": "Allow",
+                        "priority": 1000,
+                        "direction": "Inbound"
+                    }
+                }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Network/networkInterfaces",
+            "name": "[variables('nicName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/publicIPAddresses/', variables('publicIPAddressName'))]",
+                "[concat('Microsoft.Network/virtualNetworks/', variables('virtualNetworkName'))]"
+            ],
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses',variables('publicIPAddressName'))]"
+                            },
+                            "subnet": {
+                                "id": "[variables('subnetRef')]"
+                            }
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "apiVersion": "2015-06-15",
+            "type": "Microsoft.Compute/virtualMachines",
+            "name": "[parameters('vmName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName'))]",
+                "[concat('Microsoft.Network/networkInterfaces/', variables('nicName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[variables('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('vmName')]",
+                    "adminUsername": "[parameters('adminUsername')]",
+                    "adminPassword": "[parameters('adminPassword')]"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsServer",
+                        "offer": "WindowsServer",
+                        "sku": "2016-Datacenter",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "osdisk",
+                        "vhd": {
+                            "uri": "[concat(reference(concat('Microsoft.Storage/storageAccounts/', variables('newStorageAccountName')), providers('Microsoft.Storage', 'storageAccounts').apiVersions[0]).primaryEndpoints.blob, variables('vmStorageAccountContainerName'),'/',variables('OSDiskName'),'.vhd')]"
+                        },
+                        "caching": "ReadWrite",
+                        "createOption": "FromImage"
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('nicName'))]"
+                        }
+                    ]
+                }
+            },
+            "resources": [
+                {
+                    "type": "extensions",
+                    "name": "CustomScriptExtension",
+                    "apiVersion": "2015-06-15",
+                    "location": "[variables('location')]",
+                    "dependsOn": [
+                        "[parameters('vmName')]"
+                    ],
+                    "properties": {
+                        "publisher": "Microsoft.Compute",
+                        "type": "CustomScriptExtension",
+                        "typeHandlerVersion": "1.8",
+                        "autoUpgradeMinorVersion": true,
+                        "settings": {
+                            "fileUris": [
+                                "[variables('scriptURI')]"
+                            ],
+                            "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptFolder'), '/', variables('scriptFileName'), ' ', variables('scriptParameters'))]"
+                        }
+                    }
+                }
+            ]
+        }
+    ],
+    "outputs": {}
+}

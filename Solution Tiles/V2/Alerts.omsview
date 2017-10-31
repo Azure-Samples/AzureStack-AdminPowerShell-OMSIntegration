@@ -1,0 +1,187 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "Alerts",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/Alerts')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "Alerts",
+                        "Name": "Alerts",
+                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Source": "Local",
+                        "Version": 2,
+                        "Dashboard": [
+                            {
+                                "Id": "TwoNumberTileListBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Aggregated Alerts",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Tile": {
+                                        "Legend": "Critical ",
+                                        "Query": "AzureStack_CL | where isnotempty(Alerts_s) and Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(15m) and AlertsSeverity_s == \"Critical\" | sort by TimeGenerated desc| count "
+                                    },
+                                    "SecondTile": {
+                                        "Legend": "Warning",
+                                        "Query": "AzureStack_CL | where isnotempty(Alerts_s) and Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(15m) and AlertsSeverity_s == \"Warning\" | sort by TimeGenerated desc| count "
+                                    },
+                                    "List": {
+                                        "Query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(15m) | summarize AggregatedValue = count() by Alerts_s, AlertsSeverity_s, CloudName_s",
+                                        "HideGraph": true,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Alert Name",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item}// Oql: {selected item} // Args: {OQ: True; WorkspaceId: 6465421b-37e6-49f2-a721-11b484204a99} // Settings: {NVQ: True; PTT: True} // Version: 0.1.130"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "NotableQueriesBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "List of queries",
+                                        "newGroup": false,
+                                        "preselectedFilters": "Type, Computer",
+                                        "renderMode": "grid"
+                                    },
+                                    "queries": [
+                                        {
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and AlertsSeverity_s == \"Critical\" | sort by TimeGenerated desc",
+                                            "displayName": "Critical Alerts"
+                                        },
+                                        {
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and AlertsSeverity_s == \"Warning\" | sort by TimeGenerated desc",
+                                            "displayName": "Warning Alerts"
+                                        },
+                                        {
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and isnotempty(Alerts_s) | sort by TimeGenerated desc",
+                                            "displayName": "All Alerts"
+                                        },
+                                        {
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and isnotempty(AlertsRemediation) | sort by TimeGenerated desc",
+                                            "displayName": "Remediation"
+                                        }
+                                    ]
+                                }
+                            }
+                        ],
+                        "OverviewTile": {
+                            "Id": "SingleQueryDonutBuilderTileV1",
+                            "Type": "OverviewTile",
+                            "Version": 2,
+                            "Configuration": {
+                                "Donut": {
+                                    "Query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(15m) and isnotempty(Alerts_s) | summarize AggregatedValue = count() by AlertsSeverity_s | sort by AggregatedValue desc// Oql: * Type=AzureStack_CL TimeGenerated>NOW-15MINUTES  Alerts_s=* | measure count() by AlertsSeverity_s // Args: {OQ: True; WorkspaceId: 6465421b-37e6-49f2-a721-11b484204a99} // Settings: {PTT: True; SortM: True} // Version: 0.1.130",
+                                    "CenterLegend": {
+                                        "Text": "Total",
+                                        "Operation": "Sum",
+                                        "ArcsToSelect": []
+                                    },
+                                    "Options": {
+                                        "colors": [
+                                            "#e81123",
+                                            "#ffb900",
+                                            "#009e49"
+                                        ],
+                                        "valueColorMapping": [
+                                            {
+                                                "value": "Warning",
+                                                "color": "#ffb900"
+                                            },
+                                            {
+                                                "value": "Critical",
+                                                "color": "#e81123"
+                                            },
+                                            {
+                                                "value": "Healthy",
+                                                "color": "#009e49"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "search *// Oql: * // Args: {OQ: True; WorkspaceId: 6465421b-37e6-49f2-a721-11b484204a99} // Settings: {PTT: True; SortI: True} // Version: 0.1.130",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
