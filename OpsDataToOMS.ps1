@@ -1,12 +1,12 @@
 ﻿Set-ExecutionPolicy Bypass -Force
 Install-Module -Name OMSIngestionAPI -Force
-Import-Module C:\Intellistack\AzureStack-Tools-vnext\Infrastructure\AzureStack.Infra.psm1 -Force
+Import-Module C:\AZSAdminOMSInt\AzureStack-Tools-vnext\Infrastructure\AzureStack.Infra.psm1 -Force
 
 #OMS Authentication
 
-$info = Get-Content -Raw -Path "C:\Intellistack\info.txt" | ConvertFrom-Json
+$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
 $Username = $info.AzureUsername
-$Password = Get-Content "C:\Intellistack\azpassword.txt" | ConvertTo-SecureString
+$Password = Get-Content "C:\AZSAdminOMSInt\azpassword.txt" | ConvertTo-SecureString
 $Credential=New-Object PSCredential($UserName,$Password)
 $OMSWorkspaceName = $info.omsWorkspaceName
 $OMSRGName = $info.omsResourceGroup
@@ -17,7 +17,7 @@ $Location2 = $info.Region
 $cloudName2 = $info.CloudName
 $State2 = "active"
 $UserName2= $info.AzureStackAdminUsername
-$Password2= Get-Content "C:\Intellistack\azspassword.txt"| ConvertTo-SecureString
+$Password2= Get-Content "C:\AZSAdminOMSInt\azspassword.txt"| ConvertTo-SecureString
 $Credential2=New-Object PSCredential($UserName2,$Password2)
 
 $deploymentGuid = $info.DeploymentGuid
@@ -86,19 +86,6 @@ $ws = Get-AzureRmOperationalInsightsWorkspace -ResourceGroupName $OMSRGName -Nam
 
 
 
-#Fake data below
-
-$vcpu_1 = "166"
-$vcpu_2 = "124"
-$vcpu1 = $vcpu_1 -as [decimal]
-$vcpu2 = $vcpu_2 -as [decimal]
-
-$vcpu_3 = "599"
-$vcpu_4 = "729"
-$Vcpu3 = $vcpu_3 -as [decimal]
-$Vcpu4 = $vcpu_4 -as [decimal]
-
-
 $MASTest = @()
     $MASData = New-Object psobject -Property @{
         Type = 'Capacity';
@@ -107,8 +94,6 @@ $MASTest = @()
         Version = $currentversion2;
         State = $uState2;
 
-        CpuUsed = $vcpu2;
-        CpuAvail = $vcpu4;
         DiskUsed = $used2;
         MemoryUsed = $usedmem2;
 
