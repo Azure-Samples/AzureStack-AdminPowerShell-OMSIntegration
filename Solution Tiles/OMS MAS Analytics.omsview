@@ -1,0 +1,320 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "location": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "resourcegroup": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "subscriptionId": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspace": {
+            "type": "string",
+            "defaultValue": ""
+        },
+        "workspaceapiversion": {
+            "type": "string",
+            "defaultValue": ""
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "[parameters('workspaceapiversion')]",
+            "name": "[parameters('workspace')]",
+            "type": "Microsoft.OperationalInsights/workspaces",
+            "location": "[parameters('location')]",
+            "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]",
+            "resources": [
+                {
+                    "apiVersion": "2015-11-01-preview",
+                    "name": "Azure Stack Analytics",
+                    "type": "views",
+                    "location": "[parameters('location')]",
+                    "id": "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'),'/views/Azure Stack Analytics')]",
+                    "dependson": [
+                        "[Concat('/subscriptions/', parameters('subscriptionId'), '/resourceGroups/', parameters('resourcegroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('workspace'))]"
+                    ],
+                    "properties": {
+                        "Id": "Azure Stack Analytics",
+                        "Name": "Azure Stack Analytics",
+                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Source": "Local",
+                        "Version": 1,
+                        "Dashboard": [
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Versions of Clouds",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Status of Clouds",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "Type=AzureStack_CL TimeGenerated>NOW-15MINUTES | measure count() by State_s",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#007233",
+                                                "#ffb900",
+                                                "#e81123"
+                                            ],
+                                            "valueColorMapping": [
+                                                {
+                                                    "value": "Idle",
+                                                    "color": "#0072c6"
+                                                },
+                                                {
+                                                    "value": "UpdateAvailable",
+                                                    "color": "#ffb900"
+                                                },
+                                                {
+                                                    "value": "AppliedSuccessfully",
+                                                    "color": "#007233"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count() by Version_s,CloudName_s",
+                                        "HideGraph": true,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Version Number",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "{selected item}"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Infrastructure Roles",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "Health Status of Clouds",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES | measure count() by InfrastructureRoleHealths_s",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#009e49",
+                                                "#0072c6",
+                                                "#00bcf2"
+                                            ],
+                                            "valueColorMapping": [
+                                                {
+                                                    "value": "Healthy",
+                                                    "color": "#009e49"
+                                                },
+                                                {
+                                                    "value": "Warning",
+                                                    "color": "#ffb900"
+                                                },
+                                                {
+                                                    "value": "Critical",
+                                                    "color": "#e81123"
+                                                }
+                                            ]
+                                        }
+                                    },
+                                    "List": {
+                                        "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES | measure count() by InfrastructureRole_s, InfrastructureRoleHealths_s, CloudName_s",
+                                        "HideGraph": true,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Role",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "{selected item}"
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "NumberTileListBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Location",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Tile": {
+                                        "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES | measure count() by Location_s",
+                                        "Legend": "Number of Azure Stack Instances"
+                                    },
+                                    "List": {
+                                        "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count() by Location_s, CloudName_s",
+                                        "HideGraph": true,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Location",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "{selected item}"
+                                    }
+                                }
+                            }
+                        ],
+                        "OverviewTile": {
+                            "Id": "SingleQueryDonutBuilderTileV1",
+                            "Type": "OverviewTile",
+                            "Version": 0,
+                            "Configuration": {
+                                "Donut": {
+                                    "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES |measure count() by State_s",
+                                    "CenterLegend": {
+                                        "Text": "Total",
+                                        "Operation": "Sum",
+                                        "ArcsToSelect": []
+                                    },
+                                    "Options": {
+                                        "colors": [
+                                            "#009e49",
+                                            "#fcd116",
+                                            "#00bcf2"
+                                        ],
+                                        "valueColorMapping": [
+                                            {
+                                                "value": "Idle",
+                                                "color": "#0072c6"
+                                            },
+                                            {
+                                                "value": "UpdateAvailable",
+                                                "color": "#fcd116"
+                                            },
+                                            {
+                                                "value": "Healthy",
+                                                "color": "#009e49"
+                                            },
+                                            {
+                                                "value": "UpToDate",
+                                                "color": "#009e49"
+                                            }
+                                        ]
+                                    }
+                                },
+                                "Advanced": {
+                                    "DataFlowVerification": {
+                                        "Enabled": false,
+                                        "Query": "*",
+                                        "Message": ""
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            ]
+        }
+    ]
+}
