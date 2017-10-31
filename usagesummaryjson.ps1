@@ -187,9 +187,9 @@ $dayBeforeYesterday = $yesterday.addDays(-1)
 $usageStartTime = $dayBeforeYesterday.ToShortDateString()
 $usageEndTime = $yesterday.ToShortDateString()
 
-$info = Get-Content -Raw -Path "C:\Intellistack\info.txt" | ConvertFrom-Json
+$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
 $Username = $info.AzureStackAdminUsername
-$Password = Get-Content "C:\Intellistack\azspassword.txt" | ConvertTo-SecureString
+$Password = Get-Content "C:\AZSAdminOMSInt\azspassword.txt" | ConvertTo-SecureString
 $aadCred = New-Object PSCredential($Username, $Password)
 
 $pos = $Username.IndexOf('@')
