@@ -68,7 +68,8 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 # download scripts from TFS
 # TODO: pull script from public github without token. 
 cd C:\
-git clone "https://chasat%40microsoft.com:$($TFSPersonalAccessToken)@mas2oms.visualstudio.com/DefaultCollection/_git/Intellistack"
+# git clone "https://chasat%40microsoft.com:$($TFSPersonalAccessToken)@mas2oms.visualstudio.com/DefaultCollection/_git/Intellistack"
+git clone "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git"
 
 # installing powershell modules for azure stack. 
 # NuGet required for Set-PsRepository PSGallery.  
