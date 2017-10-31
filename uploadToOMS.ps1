@@ -1,6 +1,6 @@
-$info = Get-Content -Raw -Path "C:\Intellistack\info.txt" | ConvertFrom-Json
+$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
 $azureUsername = $info.AzureUsername
-$azurePassword = Get-Content "C:\Intellistack\azpassword.txt" | ConvertTo-SecureString
+$azurePassword = Get-Content "C:\AZSAdminOMSInt\azpassword.txt" | ConvertTo-SecureString
 $azureCredential = New-Object PSCredential($azureUsername, $azurePassword)
 $azureSubscription = $info.AzureSubscription
 
@@ -22,7 +22,7 @@ $deploymentGuid = $info.DeploymentGuid
 # get subscription to tenant mapping
 Import-Module .\Get-AllCurrentSubscriptions.psm1
 $Username = $info.AzureStackAdminUsername
-$Password = Get-Content "C:\Intellistack\azspassword.txt" | ConvertTo-SecureString
+$Password = Get-Content "C:\AZSAdminOMSInt\azspassword.txt" | ConvertTo-SecureString
 $Credential = New-Object PSCredential($Username, $Password)
 $pos = $Username.IndexOf('@')
 $aadDomain = $Username.Substring($pos + 1)
