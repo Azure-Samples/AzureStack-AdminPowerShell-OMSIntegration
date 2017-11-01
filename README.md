@@ -1,14 +1,21 @@
-# Project Name
+---
+services: Azure-Stack
+platforms: powershell
+author: chasat-ms
+---
 
-(short, 1-3 sentenced, description of the project)
+# AzureStack-AdminPowerShell-OMSIntegration
+
+A common ask from Microsoft Azure Stack customers is how can integrate the operational and usage data from multiple Azure Stack deployments with OMS?  This project provides an example of how customers can build their own integration to use OMS and PowerBI to visualize operational and usage data.
 
 ## Features
 
-This project framework provides the following features:
+This project sample provides the follow features:
 
-* Feature 1
-* Feature 2
-* ...
+* Azure Stack alerts viewable through OMS
+* Azure Stack capacity data (memory, storage, public IP) viewable through OMS
+* Azure Stack version data per deployment viewable through OMS
+* Azure Stack usage data available for PowerBI queries
 
 ## Getting Started
 
