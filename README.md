@@ -31,4 +31,4 @@ This project sample provides the follow features:
 ### Installation
 
 - Follow the detailed guidance in /docs/setup.md to deploy and configure a VM with scheduled tasks to upload data to OMS
-
+- Follow the detailed guidance in /docs/dashboard.md to configure the PowerBI Dashboard for usage data analysis
