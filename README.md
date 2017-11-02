@@ -6,7 +6,7 @@ author: chasat-ms
 
 # AzureStack-AdminPowerShell-OMSIntegration
 
-A common ask from Microsoft Azure Stack customers is how can they integrate the operational and usage data from multiple Azure Stack deployments with OMS?  This project provides an example of how customers can build their own integration to use OMS and PowerBI to visualize operational and usage data.
+A common ask from Microsoft Azure Stack customers is how can they integrate the operational and usage data from multiple Azure Stack deployments with OMS.  This project provides an example of how customers can build their own custom integration with OMS and PowerBI to visualize operational and usage data.
 
 ## Features
 
@@ -21,44 +21,14 @@ This project sample provides the follow features:
 
 ### Prerequisites
 
-(ideally very short, if any)
+- Running and registered instance of Azure Stack (GA bits 170928.3 or higher)
+- Marketplace syndication of the Windows Server 2016 - Eval VM Image
+- Deployment GUID of Azure Stack system
+- Subscription to Azure (OMS Log Analytics)
+- Internet connection from Azure Stack OMS VM to Azure
 
-- OS
-- Library version
-- ...
 
 ### Installation
 
-(ideally very short)
+- Follow the detailed guidance in /docs/setup.md to deploy and configure a VM with scheduled tasks to upload data to OMS
 
-- npm install [package name]
-- mvn install
-- ...
-
-### Quickstart
-(Add steps to get up and running quickly)
-
-1. git clone [repository clone url]
-2. cd [respository name]
-3. ...
-
-
-## Demo
-
-A demo app is included to show how to use the project.
-
-To run the demo, follow these steps:
-
-(Add steps to start up the demo)
-
-1.
-2.
-3.
-
-## Resources
-
-(Any additional resources or related projects)
-
-- Link to supporting information
-- Link to similar sample
-- ...
