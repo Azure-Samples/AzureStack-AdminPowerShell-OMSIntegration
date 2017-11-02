@@ -1,6 +1,6 @@
 ---
 services: Azure-Stack
-platforms: powershell
+platforms: PowerShell
 author: chasat-ms
 ---
 
