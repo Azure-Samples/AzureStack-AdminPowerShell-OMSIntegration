@@ -25,7 +25,7 @@
         "deploymentGuid": {
             "type": "string",
             "metadata": {
-                "description": "The deployment ID that uniquely identifies an individual Azure Stack, can be found by running Get-DeploymentGuid script."
+                "description": "The deployment ID that uniquely identifies an individual Azure Stack, can be found by running Get-DeploymentGuid script on ASDK, or get-azurestackstampinfo on multi-node"
             }
         },
         "cloudName": {
@@ -37,7 +37,7 @@
         "region": {
             "type": "string",
             "metadata": {
-                "description": "region this azure stack instance belongs to. "
+                "description": "region this azure stack instance belongs to. e.g. portal.<regionname>.fqdn and local for ASDK "
             },
             "defaultValue": "local"
         },
