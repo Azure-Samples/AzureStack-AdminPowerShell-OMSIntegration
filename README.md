@@ -22,7 +22,7 @@ This project sample provides the follow features:
 ### Prerequisites
 
 - Running and registered instance of Azure Stack (GA bits 170928.3 or higher)
-- Marketplace syndication of the Windows Server 2016 - Eval VM Image
+- Marketplace syndication of the Windows Server 2016 - Eval VM Image and Custom Script Extension
 - Deployment GUID of Azure Stack system
 - Subscription to Azure (OMS Log Analytics)
 - Internet connection from Azure Stack OMS VM to Azure
