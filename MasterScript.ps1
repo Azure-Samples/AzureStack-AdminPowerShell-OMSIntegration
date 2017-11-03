@@ -13,7 +13,6 @@ daily.
 .EXAMPLE
 This script is meant to be called from an ARM template. 
 .\MasterScript `
-    -TFSPersonalAccessToken <token> `
     -DeploymentGuid <deployment guid> `
     -OMSWorkspaceName "myomsworkspace" `
     -OMSResourceGroup "myomswkspacersc" `
@@ -28,8 +27,6 @@ This script is meant to be called from an ARM template.
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
-    [string] $TFSPersonalAccessToken,
     [Parameter(Mandatory = $true)]
     [string] $DeploymentGuid,
     [Parameter(Mandatory = $true)]
