@@ -71,14 +71,14 @@ $availIP2=$availIPPool2.value
 
 
 ##Get ResourceProvider Health
-$RP2=Get-AzsResourceProviderHealths -Location $location2
+$RP2=Get-AzsResourceProviderHealths -Location $location2 | where {$_.healthstate -ne "Unknown"}
 
 
 ##Get InfraStructureRole Healths
-$Role2=Get-AzsInfrastructureRoleHealths -Location $location2
+$Role2=Get-AzsInfrastructureRoleHealths -Location $location2 | where {$_.healthstate -ne "Unknown"}
 
 #Login Azure Cloud for OMS 
-Login-AzureRmAccount -Credential $Credential -SubscriptionId $SubscriptionIDforOMS
+Login-AzureRmAccount -Credential $Credential -SubscriptionId $SubscriptionIDforOMS 
 
 # get workspace key
 $wskey = Get-AzureRmOperationalInsightsWorkspaceSharedKeys -ResourceGroupName $OMSRGName -Name $OMSWorkspaceName
