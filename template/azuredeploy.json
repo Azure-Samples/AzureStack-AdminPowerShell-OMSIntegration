@@ -25,7 +25,7 @@
         "deploymentGuid": {
             "type": "string",
             "metadata": {
-                "description": "The deployment ID that uniquely identifies an individual Azure Stack, can be found by running Get-DeploymentGuid script on ASDK, or get-azurestackstampinfo on multi-node"
+                "description": "The deployment ID that uniquely identifies an individual Azure Stack, can be found by running Get-DeploymentGuid script on ASDK, or get-azurestackstampinformation on multi-node PEP endpoint"
             }
         },
         "cloudName": {
