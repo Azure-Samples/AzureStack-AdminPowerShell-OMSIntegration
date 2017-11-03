@@ -1,5 +1,6 @@
-﻿Set-ExecutionPolicy Bypass -Force
+Set-ExecutionPolicy Bypass -Force
 Install-Module -Name OMSIngestionAPI -Force
+Install-Module -Name AzureRM.OperationalInsights -Force
 Import-Module C:\AZSAdminOMSInt\AzureStack-Tools-vnext\Infrastructure\AzureStack.Infra.psm1 -Force
 
 #OMS Authentication
