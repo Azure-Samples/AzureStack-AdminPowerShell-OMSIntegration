@@ -38,9 +38,9 @@ To deploy a usage collection VM on an Azure Stack:
 7. In **Template**, paste the content of **azuredeploy.json** which can be found [here](../template/azuredeploy.json) into the text box before clicking **Save**. 
 8. Fill in the parameters according to instructions that appear in the tooltips. 
 
-![template tooptips](screenshots/template_description.png)
+![template tooptips](screenshots/template_description.PNG)
 
-Note that some fields may be pre-populated to a default value, always double-check the pre-populated value descriptions to make sure it is applicable to your deployment. To obtain the deployment guid for an ASDK, open PowerShell on the host machine, and run [Get-DeploymentGuid.ps1](..\Get-DeploymentGuid.ps1).
+Note that some fields may be pre-populated to a default value, always double-check the pre-populated value descriptions to make sure it is applicable to your deployment. To obtain the deployment guid for an ASDK, open PowerShell on the host machine, and run [Get-DeploymentGuid.ps1](../Get-DeploymentGuid.ps1).
     Note to get the DeploymentID (GUID) on multi-node Azure Stack deployments, you must connect to the Privileged Endpoint using a PS-Session and execute the Get-AzureStackStampInformation function. Copy the value in the first parameter returned which is DeploymentID.
 
 9. Use the Default Provider Subscription, create a *new* resource group, and pick a location before hitting **Create**. 
