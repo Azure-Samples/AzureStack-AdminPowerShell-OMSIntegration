@@ -1,3 +1,4 @@
+
 <#
     .Synopsis
     Exports usage meters from Azure Stack to a json file
@@ -46,6 +47,11 @@ function Export-AzureStackUsage {
         $Region = 'local'
     )
 
+    $ctx = Get-AzureRmContext
+    if (!$ctx.Subscription){
+        Write-Host "Please Connect To Azure Stack"
+        Return
+    }
     #Initialise result count and meter hashtable
     $Total = 0
     $meters = @{
@@ -83,49 +89,13 @@ function Export-AzureStackUsage {
     New-Item -Path $jsonFile -ItemType File | Out-Null
 
     #get auth metadata and acquire token for REST call
-    $api = 'adminmanagement'
-    if ($TenantUsage) {
-        $api = 'management'
-    } 
-    $uri = 'https://{0}.{1}.{2}/metadata/endpoints?api-version=1.0' -f $api, $Region, $AzureStackDomain
-    $endpoints = (Invoke-RestMethod -Uri $uri -Method Get)
-    $activeDirectoryServiceEndpointResourceId = $endpoints.authentication.audiences[0]
-    $loginEndpoint = $endpoints.authentication.loginEndpoint
-    $authority = $loginEndpoint + $AADDomain + '/'
-    $powershellClientId = '0a7bdc5c-7b57-40be-9939-d4c5fc7cd417'
-
-    #region Auth
-    if ($Credential) {
-        $adminToken = Get-AzureStackToken `
-            -Authority $authority `
-            -Resource $activeDirectoryServiceEndpointResourceId `
-            -AadTenantId $AADDomain `
-            -ClientId $powershellClientId `
-            -Credential $Credential
-    }
-    else {
-        $adminToken = Get-AzureStackToken `
-            -Authority $authority `
-            -Resource $activeDirectoryServiceEndpointResourceId `
-            -AadTenantId $AADDomain `
-            -ClientId $powershellClientId 
-    }
-  
-    if (!$adminToken) {
-        Return
-    }
-    #endregion
+    $Subscription = $ctx.Subscription.Id
+    $tokens = $ctx.TokenCache.ReadItems()
+    $token = $tokens |  Where Resource -eq $ctx.Environment.ActiveDirectoryServiceEndpointResourceId | Sort ExpiresOn | select -Last 1
 
     #Setup REST call variables
-    $headers = @{ Authorization = (('Bearer {0}' -f $adminToken)) }
-    $armEndpoint = 'https://{0}.{1}.{2}' -f $api, $Region, $AzureStackDomain
-
-    if (!$Subscription) {
-        #Get default subscription ID
-        $uri = $armEndpoint + '/subscriptions?api-version=2015-01-01'
-        $result = Invoke-RestMethod -Method GET -Uri $uri  -Headers $headers
-        $Subscription = $result.value[0].subscriptionId
-    }
+    $headers = @{ Authorization = ('Bearer {0}' -f $token.AccessToken) }
+    $armEndpoint = $ctx.Environment.ResourceManagerUrl
 
     #build usage uri
     if (!$TenantUsage) {
@@ -134,6 +104,18 @@ function Export-AzureStackUsage {
     else {
         $uri = $armEndpoint + '/subscriptions/{0}/providers/Microsoft.Commerce/UsageAggregates?api-version=2015-06-01-preview&reportedstartTime={1:s}Z&reportedEndTime={2:s}Z&showDetails=true&aggregationGranularity={3}' -f $Subscription, $StartTime, $EndTime, $Granularity
     }
+    $uri1 = $uri
+    Do {
+        $result = Invoke-RestMethod -Method GET -Uri $uri  -Headers $headers -ErrorVariable RestError -Verbose
+        if ($RestError) {
+            return
+        }
+        $usageSummary = @()
+        $uri = $result.NextLink
+        if ($uri){
+            $x=$uri.split('&')
+            $uri='{0}&{1}' -f $uri1,$x[$x.Count -1]
+            }
   
     $usageSummary = @()
     Do {
