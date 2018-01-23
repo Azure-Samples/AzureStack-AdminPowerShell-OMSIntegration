@@ -74,6 +74,7 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PsRepository PSGallery -InstallationPolicy Trusted
 Get-Module -ListAvailable | where-Object {$_.Name -like "Azure*"} | Uninstall-Module
 Install-Module -Name AzureRm.BootStrapper -Force
+Install-Module -Name AzureRm.Resources -Force
 #Use-AzureRmProfile -Profile 2017-03-09-profile -Force
 Install-Module -Name AzureStack -RequiredVersion 1.2.11 -Force
 
