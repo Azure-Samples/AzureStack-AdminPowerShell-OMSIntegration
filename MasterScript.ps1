@@ -74,8 +74,8 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PsRepository PSGallery -InstallationPolicy Trusted
 Get-Module -ListAvailable | where-Object {$_.Name -like "Azure*"} | Uninstall-Module
 Install-Module -Name AzureRm.BootStrapper -Force
-Use-AzureRmProfile -Profile 2017-03-09-profile -Force
-Install-Module -Name AzureStack -RequiredVersion 1.2.10 -Force
+#Use-AzureRmProfile -Profile 2017-03-09-profile -Force
+Install-Module -Name AzureStack -RequiredVersion 1.2.11 -Force
 
 # store data required by scheduled task in files. 
 $info = @{
