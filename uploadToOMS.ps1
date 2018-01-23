@@ -51,6 +51,7 @@ foreach ($entry in $usageSummary)
         EndTime = $entry.UsageEndTime;
         AdditionalInfo = $entry.additionalInfo;
         Location = $entry.location;
+        CloudName = $entry.CloudName;
         Tags = $entry.tags;
         SubscriptionID = $entry.subscription;
         ResourceType = $entry.resourceType;
