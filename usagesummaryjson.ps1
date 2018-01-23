@@ -44,7 +44,10 @@ function Export-AzureStackUsage {
         $Force,
         [Parameter(Mandatory = $false)]
         [String]
-        $Region = 'local'
+        $Region = 'local',
+        [Parameter(Mandatory = $false)]
+        [String]
+        $CloudName1 
     )
 
     $ctx = Get-AzureRmContext
@@ -87,8 +90,6 @@ function Export-AzureStackUsage {
         }
     }
     New-Item -Path $jsonFile -ItemType File | Out-Null
-
-    #get auth metadata and acquire token for REST call
     $Subscription = $ctx.Subscription.Id
     $tokens = $ctx.TokenCache.ReadItems()
     $token = $tokens |  Where Resource -eq $ctx.Environment.ActiveDirectoryServiceEndpointResourceId | Sort ExpiresOn | select -Last 1
@@ -105,18 +106,6 @@ function Export-AzureStackUsage {
         $uri = $armEndpoint + '/subscriptions/{0}/providers/Microsoft.Commerce/UsageAggregates?api-version=2015-06-01-preview&reportedstartTime={1:s}Z&reportedEndTime={2:s}Z&showDetails=true&aggregationGranularity={3}' -f $Subscription, $StartTime, $EndTime, $Granularity
     }
     $uri1 = $uri
-    Do {
-        $result = Invoke-RestMethod -Method GET -Uri $uri  -Headers $headers -ErrorVariable RestError -Verbose
-        if ($RestError) {
-            return
-        }
-        $usageSummary = @()
-        $uri = $result.NextLink
-        if ($uri){
-            $x=$uri.split('&')
-            $uri='{0}&{1}' -f $uri1,$x[$x.Count -1]
-            }
-  
     $usageSummary = @()
     Do {
         $result = Invoke-RestMethod -Method GET -Uri $uri  -Headers $headers -ErrorVariable RestError -Verbose
@@ -145,6 +134,7 @@ function Export-AzureStackUsage {
             $record | Add-Member -Name UsageEndTime -MemberType NoteProperty -Value $_.Properties.UsageEndTime
             $record | Add-Member -Name additionalInfo -MemberType NoteProperty -Value $resourceInfo.additionalInfo
             $record | Add-Member -Name location -MemberType NoteProperty -Value $resourceInfo.location
+            $record | Add-Member -Name CloudName -MemberType NoteProperty -Value $CloudName1
             $record | Add-Member -Name tags -MemberType NoteProperty -Value $resourceInfo.tags
             $record | Add-Member -Name subscription -MemberType NoteProperty -Value $subscription
             $record | Add-Member -Name resourceType -MemberType NoteProperty -Value $resourceType
@@ -162,6 +152,7 @@ function Export-AzureStackUsage {
     Write-Host "Complete - $Total Usage records written to $jsonFile"
 }
 
+
 $today = Get-Date
 $yesterday = $today.addDays(-1)
 $dayBeforeYesterday = $yesterday.addDays(-1)
@@ -171,11 +162,21 @@ $usageEndTime = $yesterday.ToShortDateString()
 
 $info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
 $Username = $info.AzureStackAdminUsername
-$Password = Get-Content "C:\AZSAdminOMSInt\azspassword.txt" | ConvertTo-SecureString
+$Password= Get-Content "C:\AZSAdminOMSInt\azspassword.txt"| ConvertTo-SecureString
 $aadCred = New-Object PSCredential($Username, $Password)
+$cloudName2 = $info.CloudName
+$Location2 = $info.Region 
+$api = "adminmanagement"
+$AzureStackDomain = $info.Fqdn
+$AzureStackAdminEndPoint = 'https://{0}.{1}.{2}' -f $api, $Location2, $AzureStackDomain
+
 
 $pos = $Username.IndexOf('@')
 $aadDomain = $Username.Substring($pos + 1)
 
+
+Add-AzureRMEnvironment -Name "$cloudName2" -ArmEndpoint $AzureStackAdminEndPoint
+Login-AzureRmAccount -EnvironmentName $cloudName2 -Credential $aadCred
+
 # store the result of the usage api records for the time period from the day before yesterday to yesterday in a json file. 
-Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $info.Fqdn -AADDomain $aadDomain  -Region $info.Region -Credential $aadCred -Granularity Hourly -Debug -Force
+Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $info.Fqdn -AADDomain $aadDomain  -Region $info.Region -Credential $aadCred -Granularity Hourly -Debug -Force -CloudName1 $info.CloudName
