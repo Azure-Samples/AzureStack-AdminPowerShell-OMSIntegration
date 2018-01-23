@@ -179,4 +179,4 @@ Add-AzureRMEnvironment -Name "$cloudName2" -ArmEndpoint $AzureStackAdminEndPoint
 Login-AzureRmAccount -EnvironmentName $cloudName2 -Credential $aadCred
 
 # store the result of the usage api records for the time period from the day before yesterday to yesterday in a json file. 
-Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $info.Fqdn -AADDomain $aadDomain  -Region $info.Region -Credential $aadCred -Granularity Hourly -Debug -Force -CloudName1 $info.CloudName
+Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $info.Fqdn -AADDomain $aadDomain  -Region $info.Region -Credential $aadCred -Granularity Hourly -Force -CloudName1 $info.CloudName
