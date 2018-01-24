@@ -28,49 +28,49 @@ To see aggregated usage from all of your Azure Stacks, you need to deploy a data
 
 ## Steps to Deploy
 
-Step 1 - Install a VM in the Default Provider Subscription
+### Step 1 - Install a VM in the Default Provider Subscription
 1.	Login to admin portal
 2.	Create Windows Server 2016 VM
 3.	Name VM: UploadToOMSVM
 4.	Choose A1 Standard
 5.	Wait for VM deployment to complete
 
-Step 2 - Prep the VM
+### Step 2 - Prep the VM
 1. Download 2 files from the root of this github project to the c:\ of the VM you just deployed (InvokeMasterScript.ps1 and MasterScript.ps1)
 
-Step 3 - Get required variables 
+### Step 3 - Get required variables 
 The following are required to setup the environment. You should gather these variables before proceeding to the next step.
-DeploymentGUID = “<e.g. 41da4fdd-0e5f-4ecb-85d2-52cb85cd1fca>”
-•	Access the privileged endpoint
-•	Run Get-AzureStackStampInformation
-•	Find and copy the deploymentguid from the output
-azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
-•	Update with the Azure Stack Service Admin account email
-azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
-•	Update with the Azure Stack Service Admin account password
-CloudName ="<e.g. Orlando MTC>"
-•	Update location with the name of your Cloud, this is how most data will pivot in the views
-Region = "<e.g. Orlando>"
-•	Update with the region name used when deploying Azure Stack
-Fqdn = "<e.g. azurestack.corp.microsoft.com>"
-•	Update with the FQDN name used when deploying Azure Stack
-azureSubscription = "<Your azure subscription GUID>"
-•	Update with the FQDN name used when deploying Azure Stack
-azureUsername ="<e.g. LoAnalyticsContributor@myazureinstance.onmicrosoft.com>"
-•	Update with the Azure account email with log analytics contirbutor role access to this log analytics workspace
-azureStackAdminPassword = "<e.g. MyAzurePassword206!>"
-•	Update with the Azure account password for the Log Analytics contribtor role
-OMSWorkpsaceName = "<Name of your log analytics workspace>"
-•	Update with the OMS Workspace Name 
+#### DeploymentGUID = “<e.g. 41da4fdd-0e5f-4ecb-85d2-52cb85cd1fca>”
+1. Access the privileged endpoint
+2. Run Get-AzureStackStampInformation
+3. Find and copy the deploymentguid from the output
+#### azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
+1. Update with the Azure Stack Service Admin account email
+#### azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
+1. Update with the Azure Stack Service Admin account password
+#### CloudName ="<e.g. Orlando MTC>"
+1. Update location with the name of your Cloud, this is how most data will pivot in the views
+#### Region = "<e.g. Orlando>"
+1. Update with the region name used when deploying Azure Stack
+#### Fqdn = "<e.g. azurestack.corp.microsoft.com>"
+1. Update with the FQDN name used when deploying Azure Stack
+#### azureSubscription = "<Your azure subscription GUID>"
+1. Update with the FQDN name used when deploying Azure Stack
+#### azureUsername ="<e.g. LoAnalyticsContributor@myazureinstance.onmicrosoft.com>"
+1. Update with the Azure account email with log analytics contirbutor role access to this log analytics workspace
+#### azureStackAdminPassword = "<e.g. MyAzurePassword206!>"
+1. Update with the Azure account password for the Log Analytics contribtor role
+#### OMSWorkpsaceName = "<Name of your log analytics workspace>"
+1. Update with the OMS Workspace Name 
 OMSResourceGroup = "<Name of your log analytics workspace resource group>"
-•	Update with the OMS Workspace Resource Group name
+1. Update with the OMS Workspace Resource Group name
 
-Step 4 – Update variables
+### Step 4 – Update variables
 1.	Open an elevated PowerShell ISE session
 2.	Open the file C:\InvokeMasterScript.ps1
 3.	Update the variables using the data gathered in Step 3
 
-Step 5 – Execute the script & update the scheduled task
+### Step 5 – Execute the script & update the scheduled task
 1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
 2.	Once the script completes, open Task Scheduler and update the Run As account to the Admin UserName and Password of the UploadToOMSVM VM.
 
@@ -98,18 +98,7 @@ Note: For usage data, the script is setup to query and upload usage data reporte
 
 # OMS Solution
 
-SOLUTION 1: IMPORTING THE OMS DASHBOARD (ADVANCED)
-1. Log into the azure portal.
-2. In the search bar, find �Deploy a custom template�
-3. Select �Build your own template in the editor�
-4. Click load file and select a file from the Solutions Tile folder. (Note if the OMS solution is upgraded to the V2 analytics engine use the view files in the V2 folder.)
-5. Click save.
-6. Enter the corresponding basics and settings information, exactly as it would appear on the OMS workspace for the resource created earlier in Log Analytics.
-a. To find the workspaceapiversion, click �Edit Template� and check under resource. (Should look like: 2015-11-01-preview)
-7. Agree to the terms and conditions, pin to the dashboard, and say Purchase.
-8. Repeat steps 1-6 for the remainder of the views in the Solution Tiles folder.
-
-SOLUTION 2: IMPORTING THE OMS DASHBOARD (BEGINNER) *Recommended* 
+## IMPORTING THE OMS DASHBOARD  
 1. Navigate to the newly created log analytics resource. From the OMS workspace overview page via the Log analytics overview in the azure portal, click on OMS portal.
 2. Select view designer
 3. Click Import and select a view from the Solution Tiles folder.
@@ -118,20 +107,15 @@ Note: Errors may appear since data has not been inputted. Once imported, say sav
 
 4. Repeat step 2-3 for the remaining views within the Solution Tiles folder.
 
-CHECKING THE UPDATED OMS DASHBOARD
+## CHECKING THE UPDATED OMS DASHBOARD
 1. To access the OMS dashboard, go back to the resource in the log analytics section, and click on OMS workspace.
 2. From there, click OMS portal, which should open a new tab and display the views currently uploaded to OMS.
  
-THINGS TO NOTE:
-- Currently, this documentation of the OMS integration with azure stack supports seeing 2 azure stack clouds in a single workspace. 
-- The data queries from the last 15 minutes, so if no data is showing, reupload data to OMS via running the MultAzsOMSScript from an elevated powershell in your host machine, wait 3 minutes, and refresh the dashboard. 
-
 # Power BI
 
 ## Prerequisites
-1. OMS workspace with latest Log Analytics Update. The OMS to Power BI connector requires the optional OMS Log Analytics update. For instructions on how to update, see https://docs.microsoft.com/en-us/azure/log-analytics/log-analytics-log-search-upgrade. 
-2. PowerBI Desktop. To download, see here: https://powerbi.microsoft.com/en-us/downloads/
-3. Usage data already piped up to your OMS workspace. 
+1. PowerBI Desktop. To download, see here: https://powerbi.microsoft.com/en-us/downloads/
+2. Usage data already piped up to your OMS workspace. 
  
 ## Installation Steps
 
@@ -173,5 +157,5 @@ AzureStack_CL
 For specific documentation on the Power BI dashboard template, refer to the [dashboard documentation](./dashboard.md). 
 
 ## Limitations
-1. As of 8/9/2017, there is 8mb size limit on the request that PowerBI uses to fetch data from OMS. This restriction is planned to be lifted in the future by the OMS Log Analytics team, Yammer thread is linked here: https://www.yammer.com/azureadvisors/threads/924427094 (In OMS Log Analytics Upgrade Private Preview group in Azure Advisors network).
+1. As of 8/9/2017, there is 8mb size limit on the request that PowerBI uses to fetch data from OMS. This restriction is planned to be lifted in the future by the OMS Log Analytics team.
 2. If the restriction persists, one way to increase the number of days of usage data available (by 24x) is pull in daily aggregated usage data from OMS instead of hourly aggregated data. The obvious drawback for this method is that one will not be able to  drilldown to the hourly level on the PowerBI dashboard. 
