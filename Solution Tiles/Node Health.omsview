@@ -64,7 +64,7 @@
                                     },
                                     "SecondTile": {
                                         "Legend": "Total Nodes",
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeName_s) by ScaleUnitNodeName_s | count"
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeandCloudName_s) "
                                     },
                                     "List": {
                                         "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)| summarize dcount(ScaleUnitNodeName_s) by CloudName_s",
@@ -125,7 +125,7 @@
                                         "Subtitle": ""
                                     },
                                     "Donut": {
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)  | summarize dcount(ScaleUnitNodeName_s) by ScaleUnitNodeOperationalStatus_s | sort by ScaleUnitNodeOperationalStatus_s asc",
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)  | summarize dcount(ScaleUnitNodeandCloudName_s) by ScaleUnitNodeOperationalStatus_s | sort by ScaleUnitNodeOperationalStatus_s asc",
                                         "CenterLegend": {
                                             "Text": "Total",
                                             "Operation": "Sum",
@@ -137,7 +137,16 @@
                                                 "#0072c6",
                                                 "#00bcf2"
                                             ],
-                                            "valueColorMapping": []
+                                            "valueColorMapping": [
+                                                {
+                                                    "value": "Running",
+                                                    "color": "#007233"
+                                                },
+                                                {
+                                                    "value": "Maintenance",
+                                                    "color": "#00bcf2"
+                                                }
+                                            ]
                                         },
                                         "NavigationSelect": {}
                                     },
@@ -190,7 +199,7 @@
                             "Version": 2,
                             "Configuration": {
                                 "Donut": {
-                                    "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeName_s) by ScaleUnitNodeOperationalStatus_s",
+                                    "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeandCloudName_s) by ScaleUnitNodeOperationalStatus_s",
                                     "CenterLegend": {
                                         "Text": "Total",
                                         "Operation": "Sum",
@@ -217,16 +226,10 @@
                                             },
                                             {
                                                 "value": "Maintenance",
-                                                "color": "#fff100"
+                                                "color": "#00bcf2"
                                             }
-                                        ],
-                                        "legend": true,
-                                        "skipLegendPositioning": true,
-                                        "center": true,
-                                        "unitType": "Count",
-                                        "fromUnit": "Ones"
-                                    },
-                                    "HideOtherLegend": true
+                                        ]
+                                    }
                                 },
                                 "Advanced": {
                                     "DataFlowVerification": {
