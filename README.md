@@ -35,10 +35,10 @@ This project sample provides the follow features:
 
 ## Screen Shots
 ### Log Analytics Dashboard
-https://github.com/AzureStack-AdminPowerShell-OMSIntegration/docs/screenshots/LogAnalyticsDashboard.PNG
+https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG
 ### Log Analytics Azure Stack Versions and Updates
-https://github.com/AzureStack-AdminPowerShell-OMSIntegration/docs/screenshots/LogAnalyticsVersionsandUpdates.PNG 
+https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsVersionsandUpdates.PNG 
 ### Log Analytics Azure Stack Usage VM Size Hours by Clouds and Tenants
-https://github.com/AzureStack-AdminPowerShell-OMSIntegration/docs/screenshots/LogAnalyticsUsageVMSizeHoursbyCloud.png 
+https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsUsageVMSizeHoursbyCloud.png 
 ### Azure Dashboard Example
-https://github.com/AzureStack-AdminPowerShell-OMSIntegration/docs/screenshots/AzurePortalDashboard.PNG 
+https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG
