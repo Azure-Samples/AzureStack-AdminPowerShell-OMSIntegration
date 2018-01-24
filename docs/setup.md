@@ -145,7 +145,7 @@ and then select a time range in the top right corner. After that, click **Export
 ```
 AzureStack_CL
 | where Type_s == "Capacity"
-| project DeploymentGuid_g , UploadTime_t, DiskAvail_d , DiskUsed_d , MemoryAvail_d , MemoryUsed_d , IPPoolAvail_d , IPPoolUsed_d 
+| project DeploymentGuid_g , TimeGenerated, DiskAvail_d , DiskUsed_d , MemoryAvail_d , MemoryUsed_d , IPPoolAvail_d , IPPoolUsed_d 
 ```
 
 9. There are two excel files containing supplementary information. You can find them [here](../data_sources). Download them to your machine.
