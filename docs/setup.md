@@ -135,7 +135,7 @@ Usage_CL
 | project AdditionalInfo_s, DeploymentGuid_g , EndTime_t , Location_s , MeterID_g , MeterName_s , Quantity_d , ResourceName_s , ResourceType  , ResourceURI_s , StartTime_t , SubscriptionId , Tenant_s 
 ```
 and then select a time range in the top right corner. After that, click **Export** in the upper right corner, then click **Power BI Query (M)** to download a text file containing the a query for your workspace. 
-![download PowerBI query](screenshots/download_powerbi_query.png)
+
 
 7. Replace the content in the Advanced editor with the content of the file that you downloaded in the last step.  Click **Done**. 
 
