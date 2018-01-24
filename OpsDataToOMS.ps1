@@ -165,6 +165,7 @@ if ($AllScaleUnits2-is [Array]) {
             ScaleUnitNodeName = $AllScaleUnits2[$i].Name;
             ScaleUnitNodeLocation = $AllScaleUnits2[$i].Location;
             ScaleUnitNodeOperationalStatus = $ScaleUnitNodeStatusValue2;
+            ScaleUnitNodeandCloudName = $AllScaleUnits2[$i].Name +'_'+ $cloudName2;
             TimeStamp = (Get-Date).ToUniversalTime();
            
         }
@@ -183,6 +184,7 @@ if ($AllScaleUnits2-is [Array]) {
             ScaleUnitNodeName = $AllScaleUnits2[0].Name;
             ScaleUnitNodeLocation = $AllScaleUnits2[0].Location;
             ScaleUnitNodeOperationalStatus = $ScaleUnitNodeStatusValue2;
+            ScaleUnitNodeandCloudName = $AllScaleUnits2[0].Name +'_'+ $cloudName2;
            TimeStamp = (Get-Date).ToUniversalTime();
     }
 
