@@ -5,7 +5,7 @@ An OMS (Operations Management Suite) workspace is needed as the platform aggrega
 To create an OMS workspace:
 
 PRE-REQUISITES
-- Running instance of Azure Stack (TP3.N or higher)
+- Running instance of Azure Stack (1709 or higher)
 - Subscription to Azure (OMS Log Analytics)
 - Internet connection from Azure Stack OMS VM to Azure
 
@@ -18,7 +18,7 @@ SETTING UP THE LOG ANALYTICS RESOURCE
 4. Provide the appropriate information. 
 5. After the deployment succeeds, note down the **resource group**, **Workspace Name**, and **Subscription ID**. They will be needed when deploying the ARM template later. 
 
-# Deploy Data Collection VM Using ARM Template
+# Deploy Data Collection scheduled tasks to a data collection VM 
 
 To see aggregated usage from all of your Azure Stacks, you need to deploy a data collection VM on **each** of your Azure Stacks. 
 
@@ -28,46 +28,63 @@ To see aggregated usage from all of your Azure Stacks, you need to deploy a data
 
 ## Steps to Deploy
 
-To deploy a usage collection VM on an Azure Stack:
-1. Connect to the host machine. 
-2. Navigate and login to the admin portal for the Azure Stack instance.
-3. Create a new storage account, remember its name, you will need it for the ARM template later. 
-4. Within the new storage account, create a new blob container with access type **Blob**. Remember the name, you will need it for the ARM template later. 
-5. Upload [MasterScript.ps1](../MasterScript.ps1) into the new blob container. 
-6. In the left pane, Click **New (+ sign)** -> **Custom** -> **Template deployment**. 
-7. In **Template**, paste the content of **azuredeploy.json** which can be found [here](../template/azuredeploy.json) into the text box before clicking **Save**. 
-8. Fill in the parameters according to instructions that appear in the tooltips. 
+Step 1 - Install a VM in the Default Provider Subscription
+1.	Login to admin portal
+2.	Create Windows Server 2016 VM
+3.	Name VM: UploadToOMSVM
+4.	Choose A1 Standard
+5.	Wait for VM deployment to complete
 
-![template tooptips](screenshots/template_description.png)
+Step 2 - Prep the VM
+1. Download 2 files from the root of this github project to the c:\ of the VM you just deployed (InvokeMasterScript.ps1 and MasterScript.ps1)
 
-Note that some fields may be pre-populated to a default value, always double-check the pre-populated value descriptions to make sure it is applicable to your deployment. To obtain the deployment guid for an ASDK, open PowerShell on the host machine, and run [Get-DeploymentGuid.ps1](..\Get-DeploymentGuid.ps1).
-    Note to get the DeploymentID (GUID) on multi-node Azure Stack deployments, you must connect to the Privileged Endpoint using a PS-Session and execute the Get-AzureStackStampInformation function. Copy the value in the first parameter returned which is DeploymentID.
+Step 3 - Get required variables 
+The following are required to setup the environment. You should gather these variables before proceeding to the next step.
+DeploymentGUID = “<e.g. 41da4fdd-0e5f-4ecb-85d2-52cb85cd1fca>”
+•	Access the privileged endpoint
+•	Run Get-AzureStackStampInformation
+•	Find and copy the deploymentguid from the output
+azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
+•	Update with the Azure Stack Service Admin account email
+azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
+•	Update with the Azure Stack Service Admin account password
+CloudName ="<e.g. Orlando MTC>"
+•	Update location with the name of your Cloud, this is how most data will pivot in the views
+Region = "<e.g. Orlando>"
+•	Update with the region name used when deploying Azure Stack
+Fqdn = "<e.g. azurestack.corp.microsoft.com>"
+•	Update with the FQDN name used when deploying Azure Stack
+azureSubscription = "<Your azure subscription GUID>"
+•	Update with the FQDN name used when deploying Azure Stack
+azureUsername ="<e.g. LoAnalyticsContributor@myazureinstance.onmicrosoft.com>"
+•	Update with the Azure account email with log analytics contirbutor role access to this log analytics workspace
+azureStackAdminPassword = "<e.g. MyAzurePassword206!>"
+•	Update with the Azure account password for the Log Analytics contribtor role
+OMSWorkpsaceName = "<Name of your log analytics workspace>"
+•	Update with the OMS Workspace Name 
+OMSResourceGroup = "<Name of your log analytics workspace resource group>"
+•	Update with the OMS Workspace Resource Group name
 
-9. Use the Default Provider Subscription, create a *new* resource group, and pick a location before hitting **Create**. 
-10. The deployment takes around 30 minutes on average. 
+Step 4 – Update variables
+1.	Open an elevated PowerShell ISE session
+2.	Open the file C:\InvokeMasterScript.ps1
+3.	Update the variables using the data gathered in Step 3
 
-This ARM template deploys a VM and runs a PowerShell script using a custom script extension. 
+Step 5 – Execute the script & update the scheduled task
+1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
+2.	Once the script completes, open Task Scheduler and update the Run As account to the Admin UserName and Password of the UploadToOMSVM VM.
 
-The custom script extension sets up 2 scheduled tasks: 
+
+The scripts sets up 2 scheduled tasks: 
 1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
-2. Upload of operational data every 15 minutes.
+2. Upload of operational data every 13 minutes.
 
 The data are uploaded to the OMS workspace you specified in the ARM template. 
 
 Note: For usage data, the script is setup to query and upload usage data reported from the day before yesterday each time the scheduled task runs. Note that no usage data will be uploaded if there are no tenant usage during the timeframe specified. 
 
 ## Troubleshooting
-1. To verify that the ARM template deployment is successful:
-    1. Check that there are no deployment errors in Azure Stack. 
-    2. Find the VM that you deployed in the resource group you specified in the ARM template. 
-    3. In the VM resource blade, click on **Extensions**, then **Custom Extensions**, and lastly click on **View detailed status** to check the logs produced by the custom script that is run by the ARM template. 
-    4.  If the last message includes 
-    ```
-    Cloning into `Intellistack`...
-    ```
-    The custom script likely ran successfully. 
-
-2. To verify that data is getting uploaded to OMS environment:
+1. To verify that data is getting uploaded to OMS environment:
 
     Log in to your OMS workspace (after 1 day for usage data and 15 minutes for operational data) and click on **all collected data** in log search. If you can see operational and usage data there, the pipeline is working.  
 
@@ -75,9 +92,9 @@ Note: For usage data, the script is setup to query and upload usage data reporte
 
     There are a couple places things could have gone wrong. 
     -  The scheduled task(s) did not get set up. To check, rdp into the machine you deployed using the ARM template and launch **Task Scheduler** from Windows Start menu to check if there is a scheduled task called **UsageDataUpload**. If there isn't, it may help to check the logs for the custom script extension following question 1 step 3 and look for any errors with registering a scheduled task.
-    - Unable to access the usage API. To check for this, look in `C:\Intellistack\UsageSummary.json` on the deployed VM, if there are no records here, that means `usagesummaryjson.ps1` failed at one point. 
-    - There are no usage data collected. On the deployed VM, if `C:\Intellistack\UsageSummary.json` shows an empty array, that most likely means there were no usage data available in the time frame specified (the day before yesterday).
-    - If there are usage entries in `C:\Intellistack\UsageSummary.json` and the sceduled task exists, then the error likely occurred in `C:\Intellistack\uploadToOMS.ps1`, which uploads usage data to OMS from the json file.
+    - Unable to access the usage API. To check for this, look in `C:\AZSAdminOMSInt\UsageSummary.json` on the deployed VM, if there are no records here, that means `usagesummaryjson.ps1` failed at one point. 
+    - There are no usage data collected. On the deployed VM, if `C:\AZSAdminOMSInt\UsageSummary.json` shows an empty array, that most likely means there were no usage data available in the time frame specified (the day before yesterday).
+    - If there are usage entries in `C:\AZSAdminOMSInt\UsageSummary.json` and the sceduled task exists, then the error likely occurred in `C:\AZSAdminOMSInt\uploadToOMS.ps1`, which uploads usage data to OMS from the json file.
 
 # OMS Solution
 
