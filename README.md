@@ -34,11 +34,7 @@ This project sample provides the follow features:
 - Follow the detailed guidance in /docs/dashboard.md to configure the PowerBI Dashboard for usage data analysis
 
 ## Screen Shots
-### Log Analytics Dashboard
-https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG
-### Log Analytics Azure Stack Versions and Updates
-https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsVersionsandUpdates.PNG 
-### Log Analytics Azure Stack Usage VM Size Hours by Clouds and Tenants
-https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsUsageVMSizeHoursbyCloud.png 
-### Azure Dashboard Example
-https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG
+### [Log Analytics Dashboard](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG) 
+### [Log Analytics Azure Stack Versions and Updates](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsVersionsandUpdates.PNG)
+### [Log Analytics Azure Stack Usage VM Size Hours by Clouds and Tenants](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsUsageVMSizeHoursbyCloud.png )
+### [Azure Dashboard Example](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG)
