@@ -43,7 +43,7 @@
                     "properties": {
                         "Id": "VM size hours by Cloud",
                         "Name": "VM size hours by Cloud",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
                         "Version": 2,
                         "Dashboard": [
@@ -281,7 +281,7 @@
                                         "Subtitle": ""
                                     },
                                     "Donut": {
-                                        "Query": "Usage_CL | where MeterName_s == \"VM size hours\" | summarize dcount(ResourceName_s) by CloudName_s | sort by dcount_ResourceName_s desc",
+                                        "Query": "Usage_CL | where ResourceType == \"virtualMachines\"  | summarize dcount(ResourceURI_s) by CloudName_s | sort by dcount_ResourceURI_s  desc",
                                         "CenterLegend": {
                                             "Text": "Total",
                                             "Operation": "Sum",
@@ -298,10 +298,9 @@
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Usage_CL | where MeterName_s == \"VM size hours\" | summarize dcount(ResourceName_s) by CloudName_s | sort by dcount_ResourceName_s desc",
+                                        "Query": "Usage_CL | where ResourceType == \"virtualMachines\"  | summarize dcount(ResourceURI_s) by CloudName_s | sort by dcount_ResourceURI_s  desc",
                                         "HideGraph": false,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
                                             "Name": "Cloud Name",
                                             "Value": "VMs Deployed"
@@ -354,7 +353,7 @@
                                         "Subtitle": ""
                                     },
                                     "Donut": {
-                                        "Query": "Usage_CL | where MeterName_s == \"VM size hours\" | summarize dcount(ResourceName_s) by Tenant_s | sort by dcount_ResourceName_s desc",
+                                        "Query": "Usage_CL | where ResourceType == \"virtualMachines\"  | summarize dcount(ResourceURI_s) by Tenant_s | sort by dcount_ResourceURI_s  desc",
                                         "CenterLegend": {
                                             "Text": "Total",
                                             "Operation": "Sum",
@@ -371,10 +370,9 @@
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Usage_CL | where MeterName_s == \"VM size hours\" | summarize dcount(ResourceName_s) by Tenant_s | sort by dcount_ResourceName_s desc",
+                                        "Query": "Usage_CL | where ResourceType == \"virtualMachines\"  | summarize dcount(ResourceURI_s) by Tenant_s | sort by dcount_ResourceURI_s  desc",
                                         "HideGraph": false,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
                                             "Name": "Tenant",
                                             "Value": "VMs deployed"
