@@ -8,6 +8,7 @@
     .EXAMPLE
     Export-AzureStackUsage -StartTime 2/15/2017 -EndTime 2/16/2017 -AzureStackDomain azurestack.local -AADDomain mydir.onmicrosoft.com -Granularity Hourly
 #>
+Start-Transcript -Path C:\AZSAdminOMSInt\usagesummaryjson.log
 function Export-AzureStackUsage {
     Param
     (
