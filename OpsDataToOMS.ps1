@@ -1,3 +1,4 @@
+Start-Transcript -Path C:\AZSAdminOMSInt\OpsDataToOMS.log
 Set-ExecutionPolicy Bypass -Force
 Install-Module -Name OMSIngestionAPI -Force
 Install-Module -Name AzureRM.OperationalInsights -Force
