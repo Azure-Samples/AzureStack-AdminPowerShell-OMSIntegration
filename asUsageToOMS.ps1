@@ -1,3 +1,4 @@
+Start-Transcript -Path C:\AZSAdminOMSInt\asUsageToOMS.log
 & .\usagesummaryjson.ps1
 
 # set execution policy and import OMS Ingestion API. 
