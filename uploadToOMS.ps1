@@ -1,3 +1,4 @@
+Start-Transcript -Path C:\AZSAdminOMSInt\uploadtoOMS.log
 $info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
 $azureUsername = $info.AzureUsername
 $azurePassword = Get-Content "C:\AZSAdminOMSInt\azpassword.txt" | ConvertTo-SecureString
