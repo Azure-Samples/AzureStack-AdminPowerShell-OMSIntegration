@@ -1,5 +1,6 @@
 ﻿Cd\
 
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted
 
 .\MasterScript.ps1 `
     -DeploymentGuid "<Replace with your DeploymentGUID, eg..cc7a4584-30c3-4161-b717-053f9ca7cc65>" `
