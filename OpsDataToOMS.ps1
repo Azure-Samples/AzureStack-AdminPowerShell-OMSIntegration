@@ -107,7 +107,7 @@ $MASTest = @()
         TimeStamp = (Get-Date).ToUniversalTime();
     }
 
-if ( $AllAlerts2.count -gt 1) {    
+if ( $AllAlerts2.count -ge 1) {    
    
     For ($i=0; $i -lt $AllAlerts2.Length; $i++) {
 
