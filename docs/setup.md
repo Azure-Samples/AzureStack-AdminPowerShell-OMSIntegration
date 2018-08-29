@@ -55,10 +55,10 @@ The following are required to setup the environment. You should gather these var
 #### Fqdn = "<e.g. azurestack.corp.microsoft.com>"
 1. Update with the FQDN name used when deploying Azure Stack
 #### azureSubscription = "Input your Azure Subscription GUID"
-1. Update with the FQDN name used when deploying Azure Stack
-#### azureUsername ="<e.g. LoAnalyticsContributor@myazureinstance.onmicrosoft.com>"
-1. Update with the Azure account email with log analytics contirbutor role access to this log analytics workspace
-#### azureStackAdminPassword = "<e.g. MyAzurePassword206!>"
+1. Update with the Azure subscription GUID where log analytics was deployed to
+#### azureUsername ="<e.g. LogAnalyticsContributor@myazureinstance.onmicrosoft.com>"
+1. Update with the Azure account email with log analytics contributor role access to this log analytics workspace
+#### azurePassword = "<e.g. MyAzurePassword206!>"
 1. Update with the Azure account password for the Log Analytics contribtor role
 #### OMSWorkpsaceName = "Name of your log analytics workspace"
 1. Update with the OMS Workspace Name 
