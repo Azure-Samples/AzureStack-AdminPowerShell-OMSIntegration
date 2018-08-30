@@ -44,7 +44,8 @@ param(
 )
 
 $azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
-
+cd c:\
+git clone "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt 
 # install git
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 # refresh the PATH to recognize "choco" command
