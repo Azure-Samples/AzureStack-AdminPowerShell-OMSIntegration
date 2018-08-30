@@ -36,8 +36,6 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $azureStackAdminPassword,
     [Parameter(Mandatory = $true)]
-    [string] $azureSubscription,
-    [Parameter(Mandatory = $true)]
     [string] $CloudName,
     [Parameter(Mandatory = $true)]
     [string] $Region,
@@ -46,7 +44,6 @@ param(
 )
 
 $azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
-$azurePasswordSecureString = $azurePassword | ConvertTo-SecureString -Force -AsPlainText
 
 # install git
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
@@ -55,11 +52,6 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 choco install git.install -y
 # refresh the PATH to recognize git
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-
-# download scripts from TFS
-# TODO: pull script from public github without token. 
-cd C:\
-git clone "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt
 
 # installing powershell modules for azure stack. 
 # NuGet required for Set-PsRepository PSGallery.  
