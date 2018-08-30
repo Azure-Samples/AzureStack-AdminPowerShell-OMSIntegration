@@ -14,14 +14,12 @@ daily.
 This script is meant to be called from an ARM template. 
 .\MasterScript `
     -DeploymentGuid <deployment guid> `
-    -OMSWorkspaceName "myomsworkspace" `
-    -OMSResourceGroup "myomswkspacersc" `
+    -OMSWorkspaceID "myomsworkspaceGUID" `
+    -OMSSharedKey "myomssharedkeyGUID" `
     -azureStackAdminUsername "serviceadmin@contoso.onmicrosoft.com" `
     -azureStackAdminPassword $Password `
-    -azureUsername "admin@contoso.onmicrosoft.com" `
-    -azurePassword $AzPassword
-    -CloudName "Cloud#1"
-    -Region "local"
+    -CloudName "Cloud#1" `
+    -Region "local" `
     -Fqdn "azurestack.external"
 
 #>
@@ -30,17 +28,13 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $DeploymentGuid,
     [Parameter(Mandatory = $true)]
-    [string] $OMSWorkspaceName,
+    [string] $OMSWorkspaceID,
     [Parameter(Mandatory = $true)]
-    [string] $OMSResourceGroup,
+    [string] $OMSSharedKey,
     [Parameter(Mandatory = $true)]
     [string] $azureStackAdminUsername,
     [Parameter(Mandatory = $true)]
     [string] $azureStackAdminPassword,
-    [Parameter(Mandatory = $true)]
-    [string] $azureUsername,
-    [Parameter(Mandatory = $true)]
-    [string] $azurePassword,
     [Parameter(Mandatory = $true)]
     [string] $azureSubscription,
     [Parameter(Mandatory = $true)]
@@ -65,7 +59,6 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 # download scripts from TFS
 # TODO: pull script from public github without token. 
 cd C:\
-# git clone "https://chasat%40microsoft.com:$($TFSPersonalAccessToken)@mas2oms.visualstudio.com/DefaultCollection/_git/Intellistack"
 git clone "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt
 
 # installing powershell modules for azure stack. 
@@ -75,8 +68,11 @@ Set-PsRepository PSGallery -InstallationPolicy Trusted
 Get-Module -ListAvailable | where-Object {$_.Name -like "Azure*"} | Uninstall-Module
 Install-Module -Name AzureRm.BootStrapper -Force
 Install-Module -Name AzureRm.Resources -Force
-#Use-AzureRmProfile -Profile 2017-03-09-profile -Force
-Install-Module -Name AzureStack -RequiredVersion 1.2.11 -Force
+Install-Module -Name AzureStack -Force
+Install-Module -Name AzureRM.AzureStackAdmin -Force
+Install-Module -Name Azs.Infrastructureinsights.Admin -Force
+Install-Module -Name Azs.Update.Admin -Force
+Install-Module -Name Azs.Fabric.Admin -Force
 
 # store data required by scheduled task in files. 
 $info = @{
@@ -84,11 +80,9 @@ $info = @{
     CloudName = $CloudName;
     Region = $Region;
     Fqdn = $Fqdn;
-    OmsWorkspaceName = $OMSWorkspaceName;
-    OmsResourceGroup = $OMSResourceGroup;
+    OmsWorkspaceID = $OMSWorkspaceID;
+    OmsSharedKey = $OMSSharedKey;
     AzureStackAdminUsername = $azureStackAdminUsername;
-    AzureUsername = $azureUsername;
-    AzureSubscription = $azureSubscription;
 }
 
 $infoJson = ConvertTo-Json $info
@@ -97,13 +91,7 @@ Set-Content -Path "C:\AZSAdminOMSInt\info.txt" -Value $infoJson
 #store passwords in txt files. 
 $passwordText = $azureStackAdminPasswordSecureString | ConvertFrom-SecureString
 Set-Content -Path "C:\AZSAdminOMSInt\azspassword.txt" -Value $passwordText
-$passwordText = $azurePasswordSecureString | ConvertFrom-SecureString
-Set-Content -Path "C:\AZSAdminOMSInt\azpassword.txt" -Value $passwordText
 
-# Download OMS Ingestion API modules (Testing to remove modules from source)
-cd C:\AZSAdminOMSInt
-mkdir OMSAPI
-Save-Module -Name OMSIngestionAPI -Path "C:\AZSAdminOMSInt\OMSAPI"
 
 #Download Azure Stack Tools VNext
 cd c:\AZSAdminOMSInt
