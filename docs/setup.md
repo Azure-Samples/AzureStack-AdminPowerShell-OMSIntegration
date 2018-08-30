@@ -54,16 +54,10 @@ The following are required to setup the environment. You should gather these var
 1. Update with the region name used when deploying Azure Stack
 #### Fqdn = "<e.g. azurestack.corp.microsoft.com>"
 1. Update with the FQDN name used when deploying Azure Stack
-#### azureSubscription = "Input your Azure Subscription GUID"
-1. Update with the Azure subscription GUID where log analytics was deployed to
-#### azureUsername ="<e.g. LogAnalyticsContributor@myazureinstance.onmicrosoft.com>"
-1. Update with the Azure account email with log analytics contributor role access to this log analytics workspace
-#### azurePassword = "<e.g. MyAzurePassword206!>"
-1. Update with the Azure account password for the Log Analytics contribtor role
-#### OMSWorkpsaceName = "Name of your log analytics workspace"
-1. Update with the OMS Workspace Name 
-OMSResourceGroup = "<Name of your log analytics workspace resource group>"
-1. Update with the OMS Workspace Resource Group name
+#### OMSWorkpsaceID= "<ID of your log analytics workspace>"
+1. Update with the OMS/Log Analytics Workspace ID which can be found in the settings pane of your Log Analytics workspace 
+#### OMSSharedKey = "<Log Analytics Workspace Shared Key>"
+1. Update with the OMS/Log Analytics Workspace Shared Key found in the settings pane of your Log Analytics workspace
 
 ### Step 4 – Update variables
 1.	Open an elevated PowerShell ISE session
@@ -77,7 +71,7 @@ OMSResourceGroup = "<Name of your log analytics workspace resource group>"
 
 The scripts sets up 2 scheduled tasks: 
 1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
-2. Upload of operational data every 13 minutes.
+2. Upload of operational data every 13 minutes. (Note this is disabled in the current release while the script for usage is fixed)
 
 The data are uploaded to the OMS workspace you specified in the ARM template. 
 
