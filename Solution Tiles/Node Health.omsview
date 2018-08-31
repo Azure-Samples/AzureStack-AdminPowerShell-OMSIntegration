@@ -43,7 +43,7 @@
                     "properties": {
                         "Id": "Node Health",
                         "Name": "Node Health",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
                         "Version": 2,
                         "Dashboard": [
@@ -67,7 +67,7 @@
                                         "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeandCloudName_s) "
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)| summarize dcount(ScaleUnitNodeName_s) by CloudName_s",
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)| summarize dcount(ScaleUnitNodeName_s) by CloudName_s | sort by dcount_ScaleUnitNodeName_s  desc ",
                                         "HideGraph": false,
                                         "enableSparklines": false,
                                         "ColumnsTitle": {
@@ -151,7 +151,7 @@
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)  | summarize dcount(ScaleUnitNodeName_s) by CloudName_s, ScaleUnitNodeOperationalStatus_s | sort by ScaleUnitNodeOperationalStatus_s asc",
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)  | summarize dcount(ScaleUnitNodeName_s) by CloudName_s, ScaleUnitNodeOperationalStatus_s | sort by ScaleUnitNodeOperationalStatus_s asc,dcount_ScaleUnitNodeName_s desc ",
                                         "HideGraph": false,
                                         "enableSparklines": false,
                                         "operation": "Summary",

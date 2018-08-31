@@ -43,7 +43,7 @@
                     "properties": {
                         "Id": "Azure Stack Versions and Updates",
                         "Name": "Azure Stack Versions and Updates",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
                         "Version": 2,
                         "Dashboard": [
@@ -63,7 +63,7 @@
                                         "Subtitle": ""
                                     },
                                     "Donut": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) | summarize dcount(CloudName_s) by State_s ",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize dcount(CloudName_s) by State_s ",
                                         "CenterLegend": {
                                             "Text": "Total",
                                             "Operation": "Sum",
@@ -83,13 +83,17 @@
                                                 {
                                                     "value": "UpdateAvailable",
                                                     "color": "#fff100"
+                                                },
+                                                {
+                                                    "value": "",
+                                                    "color": "#b4009e"
                                                 }
                                             ]
                                         },
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) | summarize by CloudName_s, State_s | sort by State_s desc ",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize by CloudName_s, State_s | sort by State_s desc ",
                                         "HideGraph": true,
                                         "enableSparklines": false,
                                         "ColumnsTitle": {
@@ -140,12 +144,12 @@
                                         "useIcon": false
                                     },
                                     "Tile": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) | summarize dcount(DeploymentGuid_g)",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)   | summarize dcount(DeploymentGuid_g)",
                                         "Legend": "Azure Stack Clouds",
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) | summarize by CloudName_s, Version_s | sort by Version_s desc",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize by CloudName_s, Version_s | sort by Version_s asc ",
                                         "HideGraph": true,
                                         "enableSparklines": false,
                                         "operation": "Summary",
@@ -193,7 +197,7 @@
                             "Version": 2,
                             "Configuration": {
                                 "Donut": {
-                                    "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) | summarize dcount(CloudName_s) by Version_s",
+                                    "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize dcount(CloudName_s) by Version_s | sort by Version_s desc",
                                     "CenterLegend": {
                                         "Text": "Total",
                                         "Operation": "Sum",
@@ -205,14 +209,8 @@
                                             "#0072c6",
                                             "#00bcf2"
                                         ],
-                                        "valueColorMapping": [],
-                                        "legend": true,
-                                        "skipLegendPositioning": true,
-                                        "center": true,
-                                        "unitType": "Count",
-                                        "fromUnit": "Ones"
-                                    },
-                                    "HideOtherLegend": true
+                                        "valueColorMapping": []
+                                    }
                                 },
                                 "Advanced": {
                                     "DataFlowVerification": {

@@ -43,7 +43,7 @@
                     "properties": {
                         "Id": "Resource Providers",
                         "Name": "Resource Providers",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
                         "Version": 2,
                         "Dashboard": [
@@ -340,14 +340,8 @@
                                                 "value": "Unknown",
                                                 "color": "#e81123"
                                             }
-                                        ],
-                                        "legend": true,
-                                        "skipLegendPositioning": true,
-                                        "center": true,
-                                        "unitType": "Count",
-                                        "fromUnit": "Ones"
-                                    },
-                                    "HideOtherLegend": true
+                                        ]
+                                    }
                                 },
                                 "Advanced": {
                                     "DataFlowVerification": {

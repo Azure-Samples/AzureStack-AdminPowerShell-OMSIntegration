@@ -43,7 +43,7 @@
                     "properties": {
                         "Id": "Alerts",
                         "Name": "Alerts",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
                         "Version": 2,
                         "Dashboard": [
