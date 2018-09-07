@@ -40,6 +40,7 @@ $AllAlerts2= @(Get-AzsAlert -Location $location2| where-object {$_.state -eq "$S
 ##Get Stamp Version
 $version2=Get-AzsUpdateLocation -Location $location2
 $currentversion2=$version2.currentversion
+$currentoemversion2=$version2.CurrentOemVersion
 $ustate2=$version2.State
 
 #Get ScaleUnit Data
@@ -85,6 +86,7 @@ $MASTest = @()
         Location = $Location2;
         CloudName = $cloudName2;
         Version = $currentversion2;
+        OEMVersion = $currentoemversion2;
         State = $uState2;
 
         DiskUsed = $used2;
