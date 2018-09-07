@@ -25,9 +25,12 @@ At C:\UpdateScripts.ps1:18 char:1
 Disable-ScheduledTask -TaskName "UsageDataUpload1"
 Disable-ScheduledTask -TaskName "OperationalDataUpload1"
 
+#Add environment variable for Git
+$env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
+
 #Clone Github repository into existing working directory
 cd C:\AZSAdminOMSInt
-git pull
+git pull "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git"
 
 cd C:\AZSAdminOMSInt
 & .\UpdateDependencies.ps1
