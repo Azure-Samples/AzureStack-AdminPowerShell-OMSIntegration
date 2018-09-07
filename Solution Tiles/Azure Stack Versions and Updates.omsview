@@ -63,7 +63,7 @@
                                         "Subtitle": ""
                                     },
                                     "Donut": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize dcount(CloudName_s) by State_s ",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(State_s)  | summarize dcount(CloudName_s) by State_s ",
                                         "CenterLegend": {
                                             "Text": "Total",
                                             "Operation": "Sum",
@@ -93,7 +93,7 @@
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize by CloudName_s, State_s | sort by State_s desc ",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(State_s) | summarize by CloudName_s, State_s | sort by State_s desc ",
                                         "HideGraph": true,
                                         "enableSparklines": false,
                                         "ColumnsTitle": {
@@ -149,8 +149,65 @@
                                         "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize by CloudName_s, Version_s | sort by Version_s asc ",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(Version_s) | summarize by CloudName_s, Version_s | sort by Version_s asc ",
                                         "HideGraph": true,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Cloud Name",
+                                            "Value": ""
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "NumberTileListBuilderBlade",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Distribution by Computer",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Tile": {
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(OEMVersion_s)   | summarize dcount(DeploymentGuid_g)",
+                                        "Legend": "Azure Stack Clouds",
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(OEMVersion_s)  | summarize by CloudName_s, OEMVersion_s | sort by OEMVersion_s asc",
+                                        "HideGraph": false,
                                         "enableSparklines": false,
                                         "operation": "Summary",
                                         "ColumnsTitle": {
@@ -197,7 +254,7 @@
                             "Version": 2,
                             "Configuration": {
                                 "Donut": {
-                                    "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h)  | summarize dcount(CloudName_s) by Version_s | sort by Version_s desc",
+                                    "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(Version_s) | summarize dcount(CloudName_s) by Version_s | sort by Version_s desc",
                                     "CenterLegend": {
                                         "Text": "Total",
                                         "Operation": "Sum",
