@@ -195,21 +195,20 @@
                                 "Version": 0,
                                 "Configuration": {
                                     "General": {
-                                        "title": "Distribution by Computer",
+                                        "title": "Azure Stack Clouds and OEM Version",
                                         "newGroup": false,
                                         "icon": "",
                                         "useIcon": false
                                     },
                                     "Tile": {
-                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(OEMVersion_s)   | summarize dcount(DeploymentGuid_g)",
                                         "Legend": "Azure Stack Clouds",
+                                        "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(OEMVersion_s)   | summarize dcount(DeploymentGuid_g)",
                                         "NavigationSelect": {}
                                     },
                                     "List": {
                                         "Query": "AzureStack_CL | where Type_s == \"Capacity\" and TimeGenerated > ago(1h) and isnotempty(OEMVersion_s)  | summarize by CloudName_s, OEMVersion_s | sort by OEMVersion_s asc",
                                         "HideGraph": false,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
                                             "Name": "Cloud Name",
                                             "Value": ""
