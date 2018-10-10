@@ -9,7 +9,7 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     -azureStackAdminUsername "<replace with your service admin account to access the admin portal/apis>" `
     -azureStackAdminPassword "<replace with your service admin password>" `
     -CloudName "<Replace with your Cloud Name, this is how many data points are pivoted in the views>" `
-    -Region "<replace with your region name specified in deploymet>" `
+    -Region "<replace with your region name specified in deployment>" `
     -Fqdn "<replace with your FQDN which follows the region name in your URL, eg.. azurestack.corp.microsoft.com>"  
 
 
