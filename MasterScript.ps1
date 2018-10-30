@@ -40,7 +40,9 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $Region,
     [Parameter(Mandatory = $true)]
-    [string] $Fqdn
+    [string] $Fqdn,
+    [Parameter(Mandatory = $true)]
+    [string] $Oem
 )
 
 $azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
