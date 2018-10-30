@@ -10,7 +10,8 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     -azureStackAdminPassword "<replace with your service admin password>" `
     -CloudName "<Replace with your Cloud Name, this is how many data points are pivoted in the views>" `
     -Region "<replace with your region name specified in deploymet>" `
-    -Fqdn "<replace with your FQDN which follows the region name in your URL, eg.. azurestack.corp.microsoft.com>"  
+    -Fqdn "<replace with your FQDN which follows the region name in your URL, eg.. azurestack.corp.microsoft.com>" `
+    -OEM "<replace with your hardware vendor name>" 
 
 
 
