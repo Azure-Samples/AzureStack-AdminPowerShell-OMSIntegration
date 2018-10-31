@@ -58,6 +58,8 @@ The following are required to setup the environment. You should gather these var
 1. Update with the OMS/Log Analytics Workspace ID which can be found in the settings pane of your Log Analytics workspace 
 #### OMSSharedKey = "<Log Analytics Workspace Shared Key>"
 1. Update with the OMS/Log Analytics Workspace Shared Key found in the settings pane of your Log Analytics workspace
+#### OEM = "<replace with your hardware vendor name>"
+1. Update with the name of your hardware vendor. Allows for reports in log analytics utilizing the OEM name.
 
 ### Step 4 – Update variables
 1.	Open an elevated PowerShell ISE session
