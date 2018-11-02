@@ -79,7 +79,7 @@ $info = @{
     OmsWorkspaceID = $OMSWorkspaceID;
     OmsSharedKey = $OMSSharedKey;
     AzureStackAdminUsername = $azureStackAdminUsername;
-    Oem = $Oem
+    Oem = $Oem;
 }
 
 $infoJson = ConvertTo-Json $info
