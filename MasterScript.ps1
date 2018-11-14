@@ -58,7 +58,7 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 choco install git.install -y
 # refresh the PATH to recognize git
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-git clone "https://github.com/ashika789/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt 
+git clone "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt 
 
 # installing powershell modules for azure stack. 
 # NuGet required for Set-PsRepository PSGallery.  
