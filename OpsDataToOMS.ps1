@@ -223,4 +223,3 @@ Write-Output $MASJson
 $logType = 'AzureStack'
 #Upload JSON to OMS
 Send-OMSAPIIngestionFile -customerId $OMSWorkspaceId -sharedKey $OMSSharedKey -body $MASJson -logType $logType -TimeStampField $Timestamp
-

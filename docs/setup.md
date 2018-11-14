@@ -1,4 +1,4 @@
-# OMS Workspace
+﻿# OMS Workspace
 
 An OMS (Operations Management Suite) workspace is needed as the platform aggregating data from all Azure Stacks. 
 
@@ -68,12 +68,12 @@ The following are required to setup the environment. You should gather these var
 
 ### Step 5 – Execute the script & update the scheduled task
 1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
-2.	Once the script completes, open Task Scheduler and update the Run As account to the Admin UserName and Password of the UploadToOMSVM VM.
-
+2.	Once the script completes, open Task Scheduler, right click on the newly created tasks named UsageDataUpload1 & OperationalDataUpload1, click Properties, and click "Change User or Group" (the Run As account) to the Admin UserName and Password of the UploadToOMSVM VM.
+3. 	Click Run. Operational Data will be piushed every 13 minutes now. Usage Data will be pushed at 9am every day.
 
 The scripts sets up 2 scheduled tasks: 
 1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
-2. Upload of operational data every 13 minutes. (Note this is disabled in the current release while the script for usage is fixed)
+2. Upload of operational data every 13 minutes.
 
 The data are uploaded to the OMS workspace you specified in the ARM template. 
 

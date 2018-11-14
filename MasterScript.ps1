@@ -21,6 +21,7 @@ This script is meant to be called from an ARM template.
     -CloudName "Cloud#1" `
     -Region "local" `
     -Fqdn "azurestack.external"
+    -OEM "HPE"  
 
 #>
 [CmdletBinding()]
@@ -43,9 +44,11 @@ param(
     [string] $Fqdn,
     [Parameter(Mandatory = $true)]
     [string] $Oem
+   
 )
 
 $azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
+
 cd c:\
 
 # install git
@@ -55,7 +58,7 @@ $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";"
 choco install git.install -y
 # refresh the PATH to recognize git
 $env:Path = [System.Environment]::GetEnvironmentVariable("Path","Machine") + ";" + [System.Environment]::GetEnvironmentVariable("Path","User")
-git clone "https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt 
+git clone "https://github.com/ashika789/AzureStack-AdminPowerShell-OMSIntegration.git" C:\AZSAdminOMSInt 
 
 # installing powershell modules for azure stack. 
 # NuGet required for Set-PsRepository PSGallery.  
@@ -79,6 +82,7 @@ $info = @{
     OmsWorkspaceID = $OMSWorkspaceID;
     OmsSharedKey = $OMSSharedKey;
     AzureStackAdminUsername = $azureStackAdminUsername;
+    AzureStackAdminPassword = $azureStackAdminPassword;
     Oem = $Oem;
 }
 
