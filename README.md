@@ -1,7 +1,7 @@
 ---
 services: Azure-Stack
 platforms: PowerShell
-author: chasat-ms
+author: chasat-ms & ashika789
 ---
 
 # AzureStack-AdminPowerShell-OMSIntegration

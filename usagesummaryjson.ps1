@@ -9,6 +9,7 @@
     Export-AzureStackUsage -StartTime 2/15/2017 -EndTime 2/16/2017 -AzureStackDomain azurestack.local -AADDomain mydir.onmicrosoft.com -Granularity Hourly
 #>
 Start-Transcript -Path C:\AZSAdminOMSInt\usagesummaryjson.log
+
 function Export-AzureStackUsage {
     Param
     (
@@ -56,7 +57,7 @@ function Export-AzureStackUsage {
         Write-Host "Please Connect To Azure Stack"
         Return
     }
-    #Initialise result count and meter hashtable
+    #Initialize result count and meter hashtable
     $Total = 0
     $meters = @{
         'F271A8A388C44D93956A063E1D2FA80B' = 'Static IP Address Usage'
@@ -77,10 +78,35 @@ function Export-AzureStackUsage {
         'FAB6EB84-500B-4A09-A8CA-7358F8BBAEA5' = 'Base VM Size Hours'
         '6DAB500F-A4FD-49C4-956D-229BB9C8C793' = 'VM size hours'
         '9cd92d4c-bafd-4492-b278-bedc2de8232a' = 'Windows VM Size Hours'
+        #Added in new Meters and Hashcodes
+        '190c935e-9ada-48ff-9ab8-56ea1cf9adaa' = 'App Service Virtual core hours'
+        '957e9f36-2c14-45a1-b6a1-1723ef71a01d' = 'Shared App Service Hours'
+        '539cdec7-b4f5-49f6-aac4-1f15cff0eda9' = 'Free App Service Hours'
+        'db658d61-ef2d-4888-9843-72f5c774fd3c' = 'Small Basic App Service Hours'
+        '27b01104-e0df-4f30-a171-f1b00ecb76b3' = 'Medium Basic App Service Hours'
+        '50db6a92-5dff-4c9b-8238-8ea5fb1be107' = 'Large Basic App Service Hours'
+        '88039d51-a206-3a89-e9de-c5117e2d10a6' = 'Small Standard App Service Hours'
+        '83a2a13e-4788-78dd-5d55-2831b68ed825' = 'Medium Standard App Service Hours'
+        '1083b9db-e9bb-24be-a5e9-d6fdd0ddefe6' = 'Large Standard App Service Hours'
+        '26bd6580-c3bd-4e7e-8092-58b28eb1bb94' = 'Small Premium App Service Hours'
+        'a1cba406-e83e-45c3-bd36-485191c215d9' = 'Medium Premium App Service Hours'
+        'a2104a9d-5a78-4f8f-a2df-034bd43d602d' = 'Large Premium App Service Hours'
+        'a91eed6c-dbbc-4532-859c-86de776433a4' = 'Extra Large Premium App Service Hours'
+        '73215a6c-fa54-4284-b9c1-7e8ec871cc5b' = 'Web Process'
+        '5887d39b-0253-4e12-83c7-03e1a93dffd9' = 'External Egress Bandwidth'
+        '264acb47-ad38-47f8-add3-47f01dc4f473' = 'SNI SSL'
+        '60b42d72-dc1c-472c-9895-6c516277edb4' = 'IP SSL'
+        'd1d04836-075c-4f27-bf65-0a1130ec60ed' = 'Functions Compute'
+        '67cc4afc-0691-48e1-a4b8-d744d1fedbde' = 'Functions Requests'
+        'CBCFEF9A-B91F-4597-A4D3-01FE334BED82' = 'DatabaseSizeHourSqlMeter'
+        'E6D8CFCD-7734-495E-B1CC-5AB0B9C24BD3' = 'DatabaseSizeHourMySqlMeter'
+        'EBF13B9F-B3EA-46FE-BF54-396E93D48AB4' = 'Key Vault transactions'
+        '2C354225-B2FE-42E5-AD89-14F0EA302C87' = 'Advanced keys transactions'
     }
     $recordFile = "UsageSummaryRecord.json"
 
-    #Output Files
+        
+    #Output Files to JSON
     if (Test-Path -Path $jsonFile -ErrorAction SilentlyContinue) {
         if ($Force) {
             Remove-Item -Path $jsonFile -Force
@@ -90,58 +116,65 @@ function Export-AzureStackUsage {
             return
         }
     }
+
+
+
+
     New-Item -Path $jsonFile -ItemType File | Out-Null
     $Subscription = $ctx.Subscription.Id
     $tokens = $ctx.TokenCache.ReadItems()
     $token = $tokens |  Where Resource -eq $ctx.Environment.ActiveDirectoryServiceEndpointResourceId | Sort ExpiresOn | select -Last 1
+   
+    $result = Get-AzsSubscriberUsage -ReportedStartTime ("{0:yyyy-MM-ddT00:00:00.00Z}" -f $StartTime)  -ReportedEndTime ("{0:yyyy-MM-ddT00:00:00.00Z}" -f $EndTime) -AggregationGranularity $Granularity
 
-    #Setup REST call variables
-    $headers = @{ Authorization = ('Bearer {0}' -f $token.AccessToken) }
-    $armEndpoint = $ctx.Environment.ResourceManagerUrl
-
-    #build usage uri
-    if (!$TenantUsage) {
-        $uri = $armEndpoint + '/subscriptions/{0}/providers/Microsoft.Commerce/subscriberUsageAggregates?api-version=2015-06-01-preview&reportedstartTime={1:s}Z&reportedEndTime={2:s}Z&showDetails=true&aggregationGranularity={3}' -f $Subscription, $StartTime, $EndTime, $Granularity
-    }
-    else {
-        $uri = $armEndpoint + '/subscriptions/{0}/providers/Microsoft.Commerce/UsageAggregates?api-version=2015-06-01-preview&reportedstartTime={1:s}Z&reportedEndTime={2:s}Z&showDetails=true&aggregationGranularity={3}' -f $Subscription, $StartTime, $EndTime, $Granularity
-    }
-    $uri1 = $uri
-    $usageSummary = @()
     Do {
-        $result = Invoke-RestMethod -Method GET -Uri $uri  -Headers $headers -ErrorVariable RestError -Verbose
+
+    #Build a subscription hashtable
+    $subtable = @{}
+    $subs = Get-AzsUserSubscription
+    $subs | ForEach-Object {$subtable.Add($_.SubscriptionId, $_.Owner)}
+        
+        $usageSummary = @()
+
         if ($RestError) {
             return
         }
-        $uri = $result.NextLink
         $count = $result.value.Count
         $Total += $count
-        $result.value  | ForEach-Object {
-            $record = New-Object -TypeName System.Object
-            $resourceInfo = ($_.Properties.InstanceData |ConvertFrom-Json).'Microsoft.Resources'
-            $resourceText = $resourceInfo.resourceUri.Replace('\', '/')
-            $subscription = $resourceText.Split('/')[2]
-            $resourceType = $resourceText.Split('/')[7]
-            $resourceName = $resourceText.Split('/')[8]
+        $result  | ForEach-Object {
+        $record = New-Object -TypeName System.Object
+        $resourceInfo = ($_.InstanceData | ConvertFrom-Json).'Microsoft.Resources'
+        $resourceText = $resourceInfo.resourceUri
+        $subscription = $resourceText.Split('/')[2]
+        $resourceType = $resourceText.Split('/')[7]
+        $resourceGroup = $resourceText.Split('/')[4]
+        $resourceName = $resourceText.Split('/')[8]
+
+
             $record | Add-Member -Name Id -MemberType NoteProperty -Value $_.id
             $record | Add-Member -Name Name -MemberType NoteProperty -Value $_.Name
             $record | Add-Member -Name Type -MemberType NoteProperty -Value $_.Type
-            $record | Add-Member -Name MeterId -MemberType NoteProperty -Value $_.Properties.MeterId
-            if ($meters.ContainsKey($_.Properties.MeterId)) {
-                $record | Add-Member -Name MeterName -MemberType NoteProperty -Value $meters[$_.Properties.MeterId]
-            }
-            $record | Add-Member -Name Quantity -MemberType NoteProperty -Value $_.Properties.Quantity
-            $record | Add-Member -Name UsageStartTime -MemberType NoteProperty -Value $_.Properties.UsageStartTime
-            $record | Add-Member -Name UsageEndTime -MemberType NoteProperty -Value $_.Properties.UsageEndTime
-            $record | Add-Member -Name additionalInfo -MemberType NoteProperty -Value $resourceInfo.additionalInfo
-            $record | Add-Member -Name location -MemberType NoteProperty -Value $resourceInfo.location
             $record | Add-Member -Name CloudName -MemberType NoteProperty -Value $CloudName1
-            $record | Add-Member -Name tags -MemberType NoteProperty -Value $resourceInfo.tags
-            $record | Add-Member -Name subscription -MemberType NoteProperty -Value $subscription
+      
+
+
+            $record | Add-Member -Name UsageStartTime -MemberType NoteProperty -Value $_.UsageStartTime
+            $record | Add-Member -Name UsageEndTime -MemberType NoteProperty -Value $_.UsageEndTime
+            $record | Add-Member -Name MeterName -MemberType NoteProperty -Value $meters[$_.MeterId]
+            $record | Add-Member -Name Quantity -MemberType NoteProperty -Value $_.Quantity
             $record | Add-Member -Name resourceType -MemberType NoteProperty -Value $resourceType
+            $record | Add-Member -Name location -MemberType NoteProperty -Value $resourceInfo.location
+            $record | Add-Member -Name resourceGroup -MemberType NoteProperty -Value $resourceGroup
             $record | Add-Member -Name resourceName -MemberType NoteProperty -Value $resourceName
+            $record | Add-Member -Name subowner -MemberType NoteProperty -Value $subtable[$subscription]
+            $record | Add-Member -Name tags -MemberType NoteProperty -Value $resourceInfo.tags
+            $record | Add-Member -Name MeterId -MemberType NoteProperty -Value $_.MeterId
+            $record | Add-Member -Name additionalInfo -MemberType NoteProperty -Value $resourceInfo.additionalInfo
+            $record | Add-Member -Name subscription -MemberType NoteProperty -Value $subscription
             $record | Add-Member -Name resourceUri -MemberType NoteProperty -Value $resourceText
-            
+
+
+
             $usageSummary += $record
         }
     }
@@ -176,7 +209,7 @@ $pos = $Username.IndexOf('@')
 $aadDomain = $Username.Substring($pos + 1)
 
 
-Add-AzureRMEnvironment -Name "$cloudName2" -ArmEndpoint $AzureStackAdminEndPoint
+Add-AzureRMEnvironment -Name $cloudName2 -ArmEndpoint $AzureStackAdminEndPoint
 Login-AzureRmAccount -EnvironmentName $cloudName2 -Credential $aadCred
 
 # store the result of the usage api records for the time period from the day before yesterday to yesterday in a json file. 

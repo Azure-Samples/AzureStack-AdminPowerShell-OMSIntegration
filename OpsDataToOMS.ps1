@@ -26,7 +26,7 @@ $deploymentGuid = $info.DeploymentGuid
 $api = "adminmanagement"
 $AzureStackDomain = $info.Fqdn
 $AzureStackAdminEndPoint = 'https://{0}.{1}.{2}' -f $api, $Location2, $AzureStackDomain
-
+$AzSOEM = $info.Oem
 
 ##############################################################################################################
 # Get Data via PS for Cloud 2
@@ -87,6 +87,7 @@ $MASTest = @()
         CloudName = $cloudName2;
         Version = $currentversion2;
         OEMVersion = $currentoemversion2;
+        OEM = $AzSOEM;
         State = $uState2;
 
         DiskUsed = $used2;
@@ -222,4 +223,3 @@ Write-Output $MASJson
 $logType = 'AzureStack'
 #Upload JSON to OMS
 Send-OMSAPIIngestionFile -customerId $OMSWorkspaceId -sharedKey $OMSSharedKey -body $MASJson -logType $logType -TimeStampField $Timestamp
-

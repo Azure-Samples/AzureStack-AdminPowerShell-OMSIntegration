@@ -21,6 +21,7 @@ This script is meant to be called from an ARM template.
     -CloudName "Cloud#1" `
     -Region "local" `
     -Fqdn "azurestack.external"
+    -OEM "HPE"  
 
 #>
 [CmdletBinding()]
@@ -40,10 +41,14 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $Region,
     [Parameter(Mandatory = $true)]
-    [string] $Fqdn
+    [string] $Fqdn,
+    [Parameter(Mandatory = $true)]
+    [string] $Oem
+   
 )
 
 $azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
+
 cd c:\
 
 # install git
@@ -77,6 +82,8 @@ $info = @{
     OmsWorkspaceID = $OMSWorkspaceID;
     OmsSharedKey = $OMSSharedKey;
     AzureStackAdminUsername = $azureStackAdminUsername;
+    AzureStackAdminPassword = $azureStackAdminPassword;
+    Oem = $Oem;
 }
 
 $infoJson = ConvertTo-Json $info
