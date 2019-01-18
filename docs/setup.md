@@ -50,7 +50,11 @@ Note that some fields may be pre-populated to a default value, always double-che
 This ARM template deploys a VM and runs a PowerShell script using a custom script extension. 
 
 The custom script extension sets up 2 scheduled tasks: 
+1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
+2. Upload of operational data every 13 minutes.
 
+The data are uploaded to the OMS workspace you specified in the ARM template. 
+---------------------------------
 ### Step 1 - Install a VM in the Default Provider Subscription
 1.	Login to admin portal
 2.	Create Windows Server 2016 VM
