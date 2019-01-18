@@ -28,6 +28,29 @@ To see aggregated usage from all of your Azure Stacks, you need to deploy a data
 
 ## Steps to Deploy
 
+
+To deploy a usage collection VM on an Azure Stack:
+1. Connect to the host machine. 
+2. Navigate and login to the admin portal for the Azure Stack instance.
+3. Create a new storage account, remember its name, you will need it for the ARM template later. 
+4. Within the new storage account, create a new blob container with access type **Blob**. Remember the name, you will need it for the ARM template later. 
+5. Upload [MasterScript.ps1](../MasterScript.ps1) into the new blob container. 
+6. In the left pane, Click **New (+ sign)** -> **Custom** -> **Template deployment**. 
+7. In **Template**, paste the content of **azuredeploy.json** which can be found [here](../template/azuredeploy.json) into the text box before clicking **Save**. 
+8. Fill in the parameters according to instructions that appear in the tooltips. 
+
+![template tooptips](screenshots/template_description.PNG)
+
+Note that some fields may be pre-populated to a default value, always double-check the pre-populated value descriptions to make sure it is applicable to your deployment. To obtain the deployment guid for an ASDK, open PowerShell on the host machine, and run [Get-DeploymentGuid.ps1](../Get-DeploymentGuid.ps1).
+    Note to get the DeploymentID (GUID) on multi-node Azure Stack deployments, you must connect to the Privileged Endpoint using a PS-Session and execute the Get-AzureStackStampInformation function. Copy the value in the first parameter returned which is DeploymentID.
+
+9. Use the Default Provider Subscription, create a *new* resource group, and pick a location before hitting **Create**. 
+10. The deployment takes around 30 minutes on average. 
+
+This ARM template deploys a VM and runs a PowerShell script using a custom script extension. 
+
+The custom script extension sets up 2 scheduled tasks: 
+
 ### Step 1 - Install a VM in the Default Provider Subscription
 1.	Login to admin portal
 2.	Create Windows Server 2016 VM
@@ -153,5 +176,6 @@ AzureStack_CL
 For specific documentation on the Power BI dashboard template, refer to the [dashboard documentation](./dashboard.md). 
 
 ## Limitations
-1. As of 8/9/2017, there is 8mb size limit on the request that PowerBI uses to fetch data from OMS. This restriction is planned to be lifted in the future by the OMS Log Analytics team.
+
+1. As of 8/9/2017, there is 8mb size limit on the request that PowerBI uses to fetch data from OMS. This restriction is planned to be lifted in the future by the OMS Log Analytics team, Yammer thread is linked here: https://www.yammer.com/azureadvisors/threads/924427094 (In OMS Log Analytics Upgrade Private Preview group in Azure Advisors network).
 2. If the restriction persists, one way to increase the number of days of usage data available (by 24x) is pull in daily aggregated usage data from OMS instead of hourly aggregated data. The obvious drawback for this method is that one will not be able to  drilldown to the hourly level on the PowerBI dashboard. 
