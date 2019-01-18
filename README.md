@@ -1,7 +1,7 @@
 ---
 services: Azure-Stack
 platforms: PowerShell
-author: chasat-ms
+author: chasat-ms & ashika789
 ---
 
 # AzureStack-AdminPowerShell-OMSIntegration
@@ -22,7 +22,7 @@ This project sample provides the follow features:
 ### Prerequisites
 
 - Running and registered instance of Azure Stack (GA bits 170928.3 or higher)
-- Marketplace syndication of the Windows Server 2016 - Eval VM Image and Custom Script Extension
+- Marketplace syndication of the Windows Server 2016 - Eval VM Image
 - Deployment GUID of Azure Stack system
 - Subscription to Azure (OMS Log Analytics)
 - Internet connection from Azure Stack OMS VM to Azure
@@ -32,3 +32,9 @@ This project sample provides the follow features:
 
 - Follow the detailed guidance in /docs/setup.md to deploy and configure a VM with scheduled tasks to upload data to OMS
 - Follow the detailed guidance in /docs/dashboard.md to configure the PowerBI Dashboard for usage data analysis
+
+## Screen Shots
+### [Log Analytics Dashboard](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG) 
+### [Log Analytics Azure Stack Versions and Updates](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsVersionsandUpdates.PNG)
+### [Log Analytics Azure Stack Usage VM Size Hours by Clouds and Tenants](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/LogAnalyticsUsageVMSizeHoursbyCloud.png )
+### [Azure Dashboard Example](https://github.com/Azure-Samples/AzureStack-AdminPowerShell-OMSIntegration/blob/master/docs/screenshots/AzurePortalDashboard.PNG)

@@ -1,17 +1,18 @@
+Start-Transcript -Path C:\AZSAdminOMSInt\OpsDataToOMS.log
 Set-ExecutionPolicy Bypass -Force
 Install-Module -Name OMSIngestionAPI -Force
 Install-Module -Name AzureRM.OperationalInsights -Force
-Import-Module C:\AZSAdminOMSInt\AzureStack-Tools-vnext\Infrastructure\AzureStack.Infra.psm1 -Force
+Import-Module -Name Azs.Infrastructureinsights.Admin -Force
+Import-Module -Name Azs.Update.Admin -Force
+Import-Module -Name Azs.Fabric.Admin -Force
 
-#OMS Authentication
+
+#OMS Authentication Variables
 
 $info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
-$Username = $info.AzureUsername
-$Password = Get-Content "C:\AZSAdminOMSInt\azpassword.txt" | ConvertTo-SecureString
-$Credential=New-Object PSCredential($UserName,$Password)
-$OMSWorkspaceName = $info.omsWorkspaceName
-$OMSRGName = $info.omsResourceGroup
-$SubscriptionIDforOMS = $info.AzureSubscription
+$OMSWorkspaceId = $info.OmsWorkspaceID 
+$OMSSharedKey = $info.OmsSharedKey
+
 
 #Cloud2 Authentication details
 $Location2 = $info.Region 
@@ -25,28 +26,29 @@ $deploymentGuid = $info.DeploymentGuid
 $api = "adminmanagement"
 $AzureStackDomain = $info.Fqdn
 $AzureStackAdminEndPoint = 'https://{0}.{1}.{2}' -f $api, $Location2, $AzureStackDomain
-
+$AzSOEM = $info.Oem
 
 ##############################################################################################################
 # Get Data via PS for Cloud 2
 Add-AzureRMEnvironment -Name "$cloudName2" -ArmEndpoint $AzureStackAdminEndPoint
-Login-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
 
 
 ##Get Alerts
-$AllAlerts2= @(Get-AzsAlert -Location $location2| where-object {$_.state -eq "$State2"})
+$AllAlerts2= @(Get-AzsAlert -Location $location2| where-object {$_.state -eq "$State2"} | Select-Object AlertId, CreatedTimestamp, FaultTypeId, ImpactedResourceDisplayName, Severity, Title)
 
 ##Get Stamp Version
 $version2=Get-AzsUpdateLocation -Location $location2
 $currentversion2=$version2.currentversion
+$currentoemversion2=$version2.CurrentOemVersion
 $ustate2=$version2.State
 
 #Get ScaleUnit Data
-$AllScaleUnits2=Get-AzSScaleUnitNode -Location $location2
+$AllScaleUnits2 = Get-AzSScaleUnitNode -Location $location2 
 
 
 ##Get Capacity Data
-$usage2=Get-AzsLocationCapacity -location $location2
+$usage2= Get-AzsRegionHealth -location $location2
 $metrics2=$usage2.UsageMetrics
 $memory2=$metrics2|where {$_.name -eq "physical memory"}
 $usedmemory2=$memory2.metricsValue|where {$_.name -eq "used"}
@@ -71,21 +73,12 @@ $availIP2=$availIPPool2.value
 
 
 ##Get ResourceProvider Health
-$RP2=Get-AzsResourceProviderHealths -Location $location2 | where {$_.healthstate -ne "Unknown"}
+$RP2 = @(Get-AzsRPHealth -Location $location2 | where {$_.healthstate -ne "Unknown"})
 
 
 ##Get InfraStructureRole Healths
-$Role2=Get-AzsInfrastructureRoleHealths -Location $location2 | where {$_.healthstate -ne "Unknown"}
-
-#Login Azure Cloud for OMS 
-Login-AzureRmAccount -Credential $Credential -SubscriptionId $SubscriptionIDforOMS 
-
-# get workspace key
-$wskey = Get-AzureRmOperationalInsightsWorkspaceSharedKeys -ResourceGroupName $OMSRGName -Name $OMSWorkspaceName
-# get workspace
-$ws = Get-AzureRmOperationalInsightsWorkspace -ResourceGroupName $OMSRGName -Name $OMSWorkspaceName
-
-
+$FabricRP = Get-AzsRPHealth -Location $location2 | where{$_.NamespaceProperty -eq "Microsoft.Fabric.Admin"}
+$Role2 = Get-AzsRegistrationHealth -Location $location2 -ServiceRegistrationId $FabricRP.RegistrationId | where {$_.healthstate -ne "Unknown"}
 
 $MASTest = @()
     $MASData = New-Object psobject -Property @{
@@ -93,6 +86,8 @@ $MASTest = @()
         Location = $Location2;
         CloudName = $cloudName2;
         Version = $currentversion2;
+        OEMVersion = $currentoemversion2;
+        OEM = $AzSOEM;
         State = $uState2;
 
         DiskUsed = $used2;
@@ -106,45 +101,44 @@ $MASTest = @()
         TimeStamp = (Get-Date).ToUniversalTime();
     }
 
-if ( $AllAlerts2.count -gt 1) {    
+ $MASAlerts = @{}
+
+if ($AllAlerts2.count -ge 1) {    
    
     For ($i=0; $i -lt $AllAlerts2.Length; $i++) {
 
-        $MASRP = New-Object psobject -Property @{
+        $MASAlerts = New-Object psobject -Property @{
             Type = 'AzureStackAlerts';
             CloudName = $cloudName2;
             Alerts = $AllAlerts2[$i].Title;
             AlertsSeverity = $AllAlerts2[$i].Severity;
             AlertsImpactedResource =$AllAlerts2[$i].ImpactedResourceDisplayName;
-            AlertsRemediation = $AllAlerts2[$i].Remediation[0].Text;
-            AlertsRemediationLength = $AllAlerts2[$i].Remediation.Length;
-            AlertsDescription = $AllAlerts2[$i].Description[0].Text;
             FaultTypeId = $AllAlerts2[$i].FaultTypeId;
             AlertId = $AllAlerts2[$i].AlertId;
+            CreatedTimeStamp = $AllAlerts2[$i].CreatedTimestamp
             TimeStamp = (Get-Date).ToUniversalTime();
 
         }
 
-        $MASTest += $MASRP
+        $MASTest += $MASAlerts
     }
    
 }  elseif ($AllAlerts2 -is [Array] -eq $false) { 
 
-    $MASRP = New-Object psobject -Property @{
+    $MASAlerts = New-Object psobject -Property @{
         Type = 'AzureStackAlerts';
         CloudName = $cloudName2;
         Alerts = $AllAlerts2[0].Title;
         AlertsSeverity = $AllAlerts2[0].Severity;
         AlertsImpactedResource =$AllAlerts2[0].ImpactedResourceDisplayName;
-        AlertsRemediation = $AllAlerts2[0].Remediation[0].Text;
-        AlertsDescription = $AllAlerts2[0].Description[0].Text;
         FaultTypeId = $AllAlerts2[0].FaultTypeId;
         AlertId = $AllAlerts2[0].AlertId;
+        CreatedTimeStamp = $AllAlerts2[0].CreatedTimestamp
         TimeStamp = (Get-Date).ToUniversalTime();
 
     }
 
-    $MASTest += $MASRP
+    $MASTest += $MASAlerts
 
 } else {
     Write-Host "No Alerts From " + $CloudName2
@@ -156,15 +150,15 @@ if ($AllScaleUnits2-is [Array]) {
     For ($i=0; $i -lt $AllScaleUnits2.Length; $i++) {
 
 
-            $ScaleUnit2= $AllScaleUnits2[$i]
-            $ScaleUnitNodeStatusValue2=$ScaleUnit2.Properties.ScaleUnitNodeStatus
-           
+         
         $MASSUNode = New-Object psobject -Property @{
             Type = 'ScaleUnitNode';
             CloudName = $cloudName2;
             ScaleUnitNodeName = $AllScaleUnits2[$i].Name;
             ScaleUnitNodeLocation = $AllScaleUnits2[$i].Location;
-            ScaleUnitNodeOperationalStatus = $ScaleUnitNodeStatusValue2;
+            ScaleUnitNodeOperationalStatus = $AllScaleUnits2[$i].ScaleUnitNodeStatus;
+            ScaleUnitNodeandCloudName = $AllScaleUnits2[$i].Name +'_'+ $cloudName2;
+            ScaleUnitName = $AllScaleUnits2[$i].ScaleUnitName;
             TimeStamp = (Get-Date).ToUniversalTime();
            
         }
@@ -173,8 +167,7 @@ if ($AllScaleUnits2-is [Array]) {
     }
    
 }  elseif ($AllScaleUnits2) { 
-            $ScaleUnit2= $AllScaleUnits2[0]
-            $ScaleUnitNodeStatusValue2=$ScaleUnit2.Properties.ScaleUnitNodeStatus
+
             
 
     $MASSUNode = New-Object psobject -Property @{
@@ -182,7 +175,9 @@ if ($AllScaleUnits2-is [Array]) {
             CloudName = $cloudName2;
             ScaleUnitNodeName = $AllScaleUnits2[0].Name;
             ScaleUnitNodeLocation = $AllScaleUnits2[0].Location;
-            ScaleUnitNodeOperationalStatus = $ScaleUnitNodeStatusValue2;
+            ScaleUnitNodeOperationalStatus = $AllScaleUnits2[0].ScaleUnitNodeStatus;
+            ScaleUnitNodeandCloudName = $AllScaleUnits2[0].Name +'_'+ $cloudName2;
+            ScaleUnitName = $AllScaleUnits2[0].ScaleUnitName;
            TimeStamp = (Get-Date).ToUniversalTime();
     }
 
@@ -196,8 +191,8 @@ For ($i=0; $i -lt $RP2.Length; $i++) {
     
     $MASRP = New-Object psobject -Property @{
         Type = 'ResourceProvider';
-        ResourceProvider = $RP2.get($i).DisplayName.ToString()
-        ResourceProviderHealths = $RP2.get($i).HealthState.ToString()
+      ResourceProvider = $RP2[$i].DisplayName
+        ResourceProviderHealths = $RP2[$i].HealthState
         CloudName = $cloudName2;
         TimeStamp = (Get-Date).ToUniversalTime();
     }
@@ -210,8 +205,8 @@ For ($i=0; $i -lt $RP2.Length; $i++) {
     
     $MASROLE = New-Object psobject -Property @{
         Type = 'InfraRoles';
-        InfrastructureRole = $Role2.get($i).ResourceName.ToString()
-        InfrastructureRoleHealths = $Role2.get($i).HealthState.ToString()
+        InfrastructureRole = $Role2[$i].ResourceName
+        InfrastructureRoleHealths = $Role2[$i].HealthState
         CloudName = $cloudName2;
        TimeStamp = (Get-Date).ToUniversalTime();
     }
@@ -227,6 +222,4 @@ $Timestamp = "TimeStamp"
 Write-Output $MASJson
 $logType = 'AzureStack'
 #Upload JSON to OMS
-Send-OMSAPIIngestionFile -customerId $ws.CustomerId -sharedKey $wskey.PrimarySharedKey -body $MASJson -logType $logType -TimeStampField $Timestamp
-
- 
+Send-OMSAPIIngestionFile -customerId $OMSWorkspaceId -sharedKey $OMSSharedKey -body $MASJson -logType $logType -TimeStampField $Timestamp

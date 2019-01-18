@@ -43,7 +43,7 @@
                     "properties": {
                         "Id": "Node Health",
                         "Name": "Node Health",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
                         "Version": 2,
                         "Dashboard": [
@@ -60,17 +60,16 @@
                                     },
                                     "Tile": {
                                         "Legend": "Total Clouds",
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(15m) | summarize AggregatedValue = count() by CloudName_s | count"
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(CloudName_s) by CloudName_s | count"
                                     },
                                     "SecondTile": {
                                         "Legend": "Total Nodes",
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(15m) | summarize AggregatedValue = count() by ScaleUnitNodeName_s | count"
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeandCloudName_s) "
                                     },
                                     "List": {
-                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(15m)| summarize AggregatedValue = count(ScaleUnitNodeName_s) by CloudName_s",
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)| summarize dcount(ScaleUnitNodeName_s) by CloudName_s | sort by dcount_ScaleUnitNodeName_s  desc ",
                                         "HideGraph": false,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
                                             "Name": "Cloud Name",
                                             "Value": "Nodes"
@@ -100,18 +99,107 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    },
+                                    "Blade": {
+                                        "NavigationSelect": {}
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Scale Unit Node Operational Status",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "--",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)  | summarize dcount(ScaleUnitNodeandCloudName_s) by ScaleUnitNodeOperationalStatus_s | sort by ScaleUnitNodeOperationalStatus_s asc",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#00188f",
+                                                "#0072c6",
+                                                "#00bcf2"
+                                            ],
+                                            "valueColorMapping": [
+                                                {
+                                                    "value": "Running",
+                                                    "color": "#007233"
+                                                },
+                                                {
+                                                    "value": "Maintenance",
+                                                    "color": "#00bcf2"
+                                                }
+                                            ]
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m)  | summarize dcount(ScaleUnitNodeName_s) by CloudName_s, ScaleUnitNodeOperationalStatus_s | sort by ScaleUnitNodeOperationalStatus_s asc,dcount_ScaleUnitNodeName_s desc ",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Computer",
+                                            "Value": "Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             }
                         ],
+                        "Filters": [],
                         "OverviewTile": {
                             "Id": "SingleQueryDonutBuilderTileV1",
                             "Type": "OverviewTile",
                             "Version": 2,
                             "Configuration": {
                                 "Donut": {
-                                    "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(15m) | summarize AggregatedValue = count() by ScaleUnitNodeOperationalStatus_s",
+                                    "Query": "AzureStack_CL | where Type_s == \"ScaleUnitNode\" and TimeGenerated > ago(30m) | summarize dcount(ScaleUnitNodeandCloudName_s) by ScaleUnitNodeOperationalStatus_s",
                                     "CenterLegend": {
                                         "Text": "Total",
                                         "Operation": "Sum",
@@ -138,16 +226,10 @@
                                             },
                                             {
                                                 "value": "Maintenance",
-                                                "color": "#fff100"
+                                                "color": "#00bcf2"
                                             }
-                                        ],
-                                        "legend": true,
-                                        "skipLegendPositioning": true,
-                                        "center": true,
-                                        "unitType": "Count",
-                                        "fromUnit": "Ones"
-                                    },
-                                    "HideOtherLegend": true
+                                        ]
+                                    }
                                 },
                                 "Advanced": {
                                     "DataFlowVerification": {

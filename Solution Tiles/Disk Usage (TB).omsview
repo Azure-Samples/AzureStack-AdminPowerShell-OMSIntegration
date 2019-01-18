@@ -45,7 +45,7 @@
                         "Name": "Disk Usage (TB)",
                         "Author": "serviceadmin@msazurestack.onmicrosoft.com",
                         "Source": "Local",
-                        "Version": 1,
+                        "Version": 2,
                         "Dashboard": [
                             {
                                 "Id": "LineChartBuilderBlade",
@@ -63,7 +63,7 @@
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "* Type=AzureStack_CL | measure max(DiskUsed_d) by CloudName_s ",
+                                        "Query": "AzureStack_CL | summarize AggregatedValue = max(DiskUsed_d) by CloudName_s",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -72,13 +72,13 @@
                                                 "displayUnit": ""
                                             },
                                             "customLabel": ""
-                                        }
+                                        },
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "* Type=AzureStack_CL | measure max(DiskUsed_d) by CloudName_s ",
+                                        "Query": "AzureStack_CL | summarize AggregatedValue = max(DiskUsed_d) by CloudName_s",
                                         "HideGraph": false,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
                                             "Name": "Cloud Name",
                                             "Value": "Max Disk Usage"
@@ -108,7 +108,10 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             },
@@ -128,7 +131,7 @@
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "* Type=AzureStack_CL  | measure max(DiskAvail_d) by CloudName_s ",
+                                        "Query": "AzureStack_CL | summarize AggregatedValue = max(DiskAvail_d) by CloudName_s",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -137,10 +140,11 @@
                                                 "displayUnit": ""
                                             },
                                             "customLabel": ""
-                                        }
+                                        },
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "* Type=AzureStack_CL | measure max(DiskAvail_d) by CloudName_s ",
+                                        "Query": "AzureStack_CL | summarize AggregatedValue = max(DiskAvail_d) by CloudName_s",
                                         "HideGraph": false,
                                         "enableSparklines": false,
                                         "operation": "Summary",
@@ -173,18 +177,22 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             }
                         ],
+                        "Filters": [],
                         "OverviewTile": {
                             "Id": "LineChartBuilderTile",
                             "Type": "OverviewTile",
-                            "Version": 0,
+                            "Version": 2,
                             "Configuration": {
                                 "LineChart": {
-                                    "Query": "* Type=AzureStack_CL | measure max(DiskUsed_d) by CloudName_s ",
+                                    "Query": "AzureStack_CL | summarize AggregatedValue = max(DiskUsed_d) by CloudName_s",
                                     "yAxis": {
                                         "isLogarithmic": false,
                                         "units": {
@@ -198,7 +206,7 @@
                                 "Advanced": {
                                     "DataFlowVerification": {
                                         "Enabled": false,
-                                        "Query": "*",
+                                        "Query": "search *// Oql: * // Args: {OQ: True; WorkspaceId: 6465421b-37e6-49f2-a721-11b484204a99} // Settings: {PTT: True; SortI: True} // Version: 0.1.130",
                                         "Message": ""
                                     }
                                 }

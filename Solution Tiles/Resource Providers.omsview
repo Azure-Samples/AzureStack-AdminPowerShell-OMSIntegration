@@ -43,9 +43,9 @@
                     "properties": {
                         "Id": "Resource Providers",
                         "Name": "Resource Providers",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
-                        "Version": 1,
+                        "Version": 2,
                         "Dashboard": [
                             {
                                 "Id": "SingleQueryDonutBuilderBladeV1",
@@ -63,7 +63,7 @@
                                         "Subtitle": ""
                                     },
                                     "Donut": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by  ResourceProviderHealths_s",
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and TimeGenerated > ago(30min) | summarize dcount(ResourceProvider) by ResourceProviderHealths_s",
                                         "CenterLegend": {
                                             "Text": "Total",
                                             "Operation": "Sum",
@@ -84,25 +84,21 @@
                                                     "value": "Warning",
                                                     "color": "#ffb900"
                                                 },
-                                              {
-                                                "value": "Healthy",
-                                                "color": "#009e49"
-                                              },
-                                              {
-                                                    "value": "Unknown",
+                                                {
+                                                    "value": "Healthy",
                                                     "color": "#009e49"
                                                 }
                                             ]
-                                        }
+                                        },
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s, CloudName_s",
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and TimeGenerated > ago(30m) | summarize makelist(ResourceProvider) by CloudName_s, ResourceProviderHealths_s ",
                                         "HideGraph": true,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
-                                            "Name": "Resource Provider",
-                                            "Value": "Count"
+                                            "Name": "Cloud Name",
+                                            "Value": ""
                                         },
                                         "Color": "#0072c6",
                                         "thresholds": {
@@ -129,7 +125,10 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             },
@@ -145,17 +144,18 @@
                                         "useIcon": false
                                     },
                                     "Tile": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s| where AggregatedValue > 0 | where ResourceProviderHealths_s=\"Warning\"",
-                                        "Legend": "Warning Resource Providers"
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and  TimeGenerated > ago(30m) | summarize dcount(ResourceProvider) by CloudName_s, ResourceProviderHealths_s | where ResourceProviderHealths_s == \"Warning\"| count ",
+                                        "Legend": "Warning Resource Providers",
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s, CloudName_s| where AggregatedValue > 0 | where ResourceProviderHealths_s=\"Warning\"",
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and  TimeGenerated > ago(30m) | distinct CloudName_s, ResourceProvider, ResourceProviderHealths_s | where ResourceProviderHealths_s == \"Warning\"",
                                         "HideGraph": true,
                                         "enableSparklines": false,
                                         "operation": "Summary",
                                         "ColumnsTitle": {
-                                            "Name": "Computer",
-                                            "Value": "Count"
+                                            "Name": "Cloud Name",
+                                            "Value": ""
                                         },
                                         "Color": "#0072c6",
                                         "thresholds": {
@@ -182,7 +182,10 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             },
@@ -198,17 +201,18 @@
                                         "useIcon": false
                                     },
                                     "Tile": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s, CloudName_s| where AggregatedValue > 0 | where ResourceProviderHealths_s=\"Critical\"",
-                                        "Legend": "Critical Resource Providers"
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and  TimeGenerated > ago(30m) | summarize dcount(ResourceProvider) by CloudName_s, ResourceProviderHealths_s | where ResourceProviderHealths_s == \"Critical\"| count ",
+                                        "Legend": "Critical Resource Providers",
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s, CloudName_s| where AggregatedValue > 0 | where ResourceProviderHealths_s=\"Critical\"",
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and  TimeGenerated > ago(30m) | distinct CloudName_s, ResourceProvider, ResourceProviderHealths_s | where ResourceProviderHealths_s == \"Critical\"",
                                         "HideGraph": true,
                                         "enableSparklines": false,
                                         "operation": "Summary",
                                         "ColumnsTitle": {
-                                            "Name": "Computer",
-                                            "Value": "Count"
+                                            "Name": "Cloud Name",
+                                            "Value": ""
                                         },
                                         "Color": "#0072c6",
                                         "thresholds": {
@@ -235,7 +239,10 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             },
@@ -251,17 +258,18 @@
                                         "useIcon": false
                                     },
                                     "Tile": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s, CloudName_s| where AggregatedValue > 0 | where ResourceProviderHealths_s=\"Healthy\"",
-                                        "Legend": "Healthy Resource Providers"
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and  TimeGenerated > ago(30m) | summarize dcount(ResourceProvider) by CloudName_s, ResourceProviderHealths_s | where ResourceProviderHealths_s == \"Healthy\"| count ",
+                                        "Legend": "Healthy Resource Providers",
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES| measure count () by ResourceProvider, ResourceProviderHealths_s, CloudName_s| where AggregatedValue > 0 | where ResourceProviderHealths_s=\"Healthy\"",
+                                        "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and  TimeGenerated > ago(30m) | distinct CloudName_s, ResourceProvider, ResourceProviderHealths_s | where ResourceProviderHealths_s == \"Healthy\"",
                                         "HideGraph": true,
                                         "enableSparklines": false,
                                         "operation": "Summary",
                                         "ColumnsTitle": {
-                                            "Name": "Computer",
-                                            "Value": "Count"
+                                            "Name": "Cloud Name",
+                                            "Value": ""
                                         },
                                         "Color": "#0072c6",
                                         "thresholds": {
@@ -288,18 +296,22 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             }
                         ],
+                        "Filters": [],
                         "OverviewTile": {
                             "Id": "SingleQueryDonutBuilderTileV1",
                             "Type": "OverviewTile",
-                            "Version": 0,
+                            "Version": 2,
                             "Configuration": {
                                 "Donut": {
-                                    "Query": "Type:AzureStack_CL TimeGenerated>NOW-15MINUTES | measure count () by  ResourceProviderHealths_s",
+                                    "Query": "AzureStack_CL | where Type_s == \"ResourceProvider\" and TimeGenerated > ago(30min) | summarize dcount(ResourceProvider) by ResourceProviderHealths_s",
                                     "CenterLegend": {
                                         "Text": "Total",
                                         "Operation": "Sum",
@@ -322,7 +334,11 @@
                                             },
                                             {
                                                 "value": "Healthy",
-                                                "color": "#009e49"
+                                                "color": "#007233"
+                                            },
+                                            {
+                                                "value": "Unknown",
+                                                "color": "#e81123"
                                             }
                                         ]
                                     }
@@ -330,7 +346,7 @@
                                 "Advanced": {
                                     "DataFlowVerification": {
                                         "Enabled": false,
-                                        "Query": "*",
+                                        "Query": "search *// Oql: * // Args: {OQ: True; WorkspaceId: 6465421b-37e6-49f2-a721-11b484204a99} // Settings: {PTT: True; SortI: True} // Version: 0.1.130",
                                         "Message": ""
                                     }
                                 }

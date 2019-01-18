@@ -45,7 +45,7 @@
                         "Name": "IP Pool Usage",
                         "Author": "serviceadmin@msazurestack.onmicrosoft.com",
                         "Source": "Local",
-                        "Version": 1,
+                        "Version": 2,
                         "Dashboard": [
                             {
                                 "Id": "LineChartBuilderBlade",
@@ -59,11 +59,11 @@
                                         "useIcon": false
                                     },
                                     "Header": {
-                                        "Title": "IPs Available over time",
+                                        "Title": "IPs available over time",
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "Type=AzureStack_CL | measure min(IPPoolAvail_d) by CloudName_s",
+                                        "Query": "AzureStack_CL | summarize AggregatedValue = min(IPPoolAvail_d) by CloudName_s",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -72,10 +72,11 @@
                                                 "displayUnit": "AUTO"
                                             },
                                             "customLabel": "IPs"
-                                        }
+                                        },
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Type=AzureStack_CL TimeGenerated>NOW-60MINUTES | measure min(IPPoolAvail_d) by CloudName_s",
+                                        "Query": "AzureStack_CL | where TimeGenerated > ago(60m) | summarize AggregatedValue = min(IPPoolAvail_d) by CloudName_s",
                                         "HideGraph": false,
                                         "enableSparklines": false,
                                         "ColumnsTitle": {
@@ -83,7 +84,6 @@
                                             "Value": "IPs"
                                         },
                                         "Color": "#0072c6",
-                                        "operation": "Summary",
                                         "thresholds": {
                                             "isEnabled": false,
                                             "values": [
@@ -108,7 +108,10 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             },
@@ -128,7 +131,7 @@
                                         "Subtitle": ""
                                     },
                                     "LineChart": {
-                                        "Query": "Type=AzureStack_CL | measure max(IPPoolUsed_d) by CloudName_s",
+                                        "Query": "AzureStack_CL | summarize AggregatedValue = max(IPPoolUsed_d) by CloudName_s",
                                         "yAxis": {
                                             "isLogarithmic": false,
                                             "units": {
@@ -137,10 +140,11 @@
                                                 "displayUnit": "AUTO"
                                             },
                                             "customLabel": "IPs"
-                                        }
+                                        },
+                                        "NavigationSelect": {}
                                     },
                                     "List": {
-                                        "Query": "Type=AzureStack_CL TimeGenerated>NOW-60MINUTES  | measure max(IPPoolUsed_d) by CloudName_s",
+                                        "Query": "AzureStack_CL | where TimeGenerated > ago(60m) | summarize AggregatedValue = max(IPPoolUsed_d) by CloudName_s",
                                         "HideGraph": false,
                                         "enableSparklines": false,
                                         "operation": "Summary",
@@ -173,18 +177,22 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             }
                         ],
+                        "Filters": [],
                         "OverviewTile": {
                             "Id": "LineChartBuilderTile",
                             "Type": "OverviewTile",
-                            "Version": 0,
+                            "Version": 2,
                             "Configuration": {
                                 "LineChart": {
-                                    "Query": "* | measure min(IPPoolAvail_d) by CloudName_s",
+                                    "Query": "AzureStack_CL | summarize AggregatedValue = min(IPPoolAvail_d) by CloudName_s",
                                     "yAxis": {
                                         "isLogarithmic": false,
                                         "units": {

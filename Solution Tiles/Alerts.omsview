@@ -43,9 +43,9 @@
                     "properties": {
                         "Id": "Alerts",
                         "Name": "Alerts",
-                        "Author": "serviceadmin@msazurestack.onmicrosoft.com",
+                        "Author": null,
                         "Source": "Local",
-                        "Version": 1,
+                        "Version": 2,
                         "Dashboard": [
                             {
                                 "Id": "TwoNumberTileListBuilderBlade",
@@ -60,20 +60,19 @@
                                     },
                                     "Tile": {
                                         "Legend": "Critical ",
-                                        "Query": "* Type=AzureStack_CL Alerts_s=* TimeGenerated>NOW-15MINUTES AlertsSeverity_s=Critical"
+                                        "Query": "AzureStack_CL | where isnotempty(Alerts_s) and Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(30m) and AlertsSeverity_s == \"Critical\" | sort by TimeGenerated desc| summarize dcount (AlertId_g)"
                                     },
                                     "SecondTile": {
                                         "Legend": "Warning",
-                                        "Query": "* Type=AzureStack_CL Alerts_s=* TimeGenerated>NOW-15MINUTES AlertsSeverity_s=Warning"
+                                        "Query": "AzureStack_CL | where isnotempty(Alerts_s) and Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(30m) and AlertsSeverity_s == \"Warning\" | sort by TimeGenerated desc| summarize dcount (AlertId_g)"
                                     },
                                     "List": {
-                                        "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES | measure count() by Alerts_s, AlertsSeverity_s, CloudName_s",
+                                        "Query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(30m) | distinct Alerts_s, AlertsSeverity_s, CloudName_s",
                                         "HideGraph": true,
                                         "enableSparklines": false,
-                                        "operation": "Summary",
                                         "ColumnsTitle": {
                                             "Name": "Alert Name",
-                                            "Value": "Count"
+                                            "Value": ""
                                         },
                                         "Color": "#0072c6",
                                         "thresholds": {
@@ -100,7 +99,86 @@
                                             ]
                                         },
                                         "NameDSVSeparator": "",
-                                        "NavigationQuery": "{selected item}"
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
+                                    },
+                                    "Blade": {
+                                        "NavigationSelect": {}
+                                    }
+                                }
+                            },
+                            {
+                                "Id": "SingleQueryDonutBuilderBladeV1",
+                                "Type": "Blade",
+                                "Version": 0,
+                                "Configuration": {
+                                    "General": {
+                                        "title": "Active Alerts by Cloud",
+                                        "newGroup": false,
+                                        "icon": "",
+                                        "useIcon": false
+                                    },
+                                    "Header": {
+                                        "Title": "--",
+                                        "Subtitle": ""
+                                    },
+                                    "Donut": {
+                                        "Query": "AzureStack_CL | where isnotempty(Alerts_s) and Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(30m)  | summarize dcount (AlertId_g) by CloudName_s | sort by dcount_AlertId_g desc",
+                                        "CenterLegend": {
+                                            "Text": "Total",
+                                            "Operation": "Sum",
+                                            "ArcsToSelect": []
+                                        },
+                                        "Options": {
+                                            "colors": [
+                                                "#00188f",
+                                                "#0072c6",
+                                                "#00bcf2"
+                                            ],
+                                            "valueColorMapping": []
+                                        },
+                                        "NavigationSelect": {}
+                                    },
+                                    "List": {
+                                        "Query": "AzureStack_CL | where isnotempty(Alerts_s) and Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(30m)  | summarize dcount (AlertId_g) by CloudName_s | sort by dcount_AlertId_g desc",
+                                        "HideGraph": false,
+                                        "enableSparklines": false,
+                                        "operation": "Summary",
+                                        "ColumnsTitle": {
+                                            "Name": "Cloud",
+                                            "Value": "Alert Count"
+                                        },
+                                        "Color": "#0072c6",
+                                        "thresholds": {
+                                            "isEnabled": false,
+                                            "values": [
+                                                {
+                                                    "name": "Normal",
+                                                    "threshold": "Default",
+                                                    "color": "#009e49",
+                                                    "isDefault": true
+                                                },
+                                                {
+                                                    "name": "Warning",
+                                                    "threshold": "60",
+                                                    "color": "#fcd116",
+                                                    "isDefault": false
+                                                },
+                                                {
+                                                    "name": "Error",
+                                                    "threshold": "90",
+                                                    "color": "#ba141a",
+                                                    "isDefault": false
+                                                }
+                                            ]
+                                        },
+                                        "NameDSVSeparator": "",
+                                        "NavigationQuery": "search {selected item} | sort by TimeGenerated desc",
+                                        "NavigationSelect": {
+                                            "NavigationQuery": "search {selected item} | sort by TimeGenerated desc"
+                                        }
                                     }
                                 }
                             },
@@ -117,32 +195,33 @@
                                     },
                                     "queries": [
                                         {
-                                            "query": "* Type=AzureStack_CL AlertsSeverity_s=Critical",
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and AlertsSeverity_s == \"Critical\" | sort by TimeGenerated desc",
                                             "displayName": "Critical Alerts"
                                         },
                                         {
-                                            "query": "* Type=AzureStack_CL AlertsSeverity_s=Warning",
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and AlertsSeverity_s == \"Warning\" | sort by TimeGenerated desc",
                                             "displayName": "Warning Alerts"
                                         },
                                         {
-                                            "query": "* Type=AzureStack_CL Alerts_s=*",
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and isnotempty(Alerts_s) | sort by TimeGenerated desc",
                                             "displayName": "All Alerts"
                                         },
                                         {
-                                            "query": "* Type=AzureStack_CL AlertsRemediation=*",
+                                            "query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and isnotempty(AlertsRemediation) | sort by TimeGenerated desc",
                                             "displayName": "Remediation"
                                         }
                                     ]
                                 }
                             }
                         ],
+                        "Filters": [],
                         "OverviewTile": {
                             "Id": "SingleQueryDonutBuilderTileV1",
                             "Type": "OverviewTile",
-                            "Version": 0,
+                            "Version": 2,
                             "Configuration": {
                                 "Donut": {
-                                    "Query": "* Type=AzureStack_CL TimeGenerated>NOW-15MINUTES  Alerts_s=* | measure count() by AlertsSeverity_s",
+                                    "Query": "AzureStack_CL | where Type_s == \"AzureStackAlerts\" and TimeGenerated > ago(30m) and isnotempty(Alerts_s) | summarize dcount(AlertId_g) by AlertsSeverity_s ",
                                     "CenterLegend": {
                                         "Text": "Total",
                                         "Operation": "Sum",
@@ -167,13 +246,19 @@
                                                 "value": "Healthy",
                                                 "color": "#009e49"
                                             }
-                                        ]
-                                    }
+                                        ],
+                                        "legend": true,
+                                        "skipLegendPositioning": true,
+                                        "center": true,
+                                        "unitType": "Count",
+                                        "fromUnit": "Ones"
+                                    },
+                                    "HideOtherLegend": true
                                 },
                                 "Advanced": {
                                     "DataFlowVerification": {
                                         "Enabled": false,
-                                        "Query": "*",
+                                        "Query": "search *// Oql: * // Args: {OQ: True; WorkspaceId: 6465421b-37e6-49f2-a721-11b484204a99} // Settings: {PTT: True; SortI: True} // Version: 0.1.130",
                                         "Message": ""
                                     }
                                 }
