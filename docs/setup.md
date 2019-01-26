@@ -30,7 +30,7 @@ To see aggregated usage from all of your Azure Stacks, you need to deploy a data
 
 ### Step 1 - Install a VM in the Default Provider Subscription
 1.	Login to admin portal
-2.	Create Windows Server 2016 VM
+2.  Click Create a resource -> Everything -> Windows Server 2016 Datacenter - BYOL use only 
 3.	Name VM: UploadToOMSVM
 4.	Choose A1 Standard
 5.	Wait for VM deployment to complete
