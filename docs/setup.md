@@ -1,4 +1,4 @@
-# OMS Workspace
+﻿# OMS Workspace
 
 An OMS (Operations Management Suite) workspace is needed as the platform aggregating data from all Azure Stacks. 
 
@@ -30,7 +30,7 @@ To see aggregated usage from all of your Azure Stacks, you need to deploy a data
 
 ### Step 1 - Install a VM in the Default Provider Subscription
 1.	Login to admin portal
-2.  Click Create a resource -> Everything -> Windows Server 2016 Datacenter - BYOL use only 
+2.	Create Windows Server 2016 VM
 3.	Name VM: UploadToOMSVM
 4.	Choose A1 Standard
 5.	Wait for VM deployment to complete
@@ -58,6 +58,8 @@ The following are required to setup the environment. You should gather these var
 1. Update with the OMS/Log Analytics Workspace ID which can be found in the settings pane of your Log Analytics workspace 
 #### OMSSharedKey = "<Log Analytics Workspace Shared Key>"
 1. Update with the OMS/Log Analytics Workspace Shared Key found in the settings pane of your Log Analytics workspace
+#### OEM = "<replace with your hardware vendor name>"
+1. Update with the name of your hardware vendor. Allows for reports in log analytics utilizing the OEM name.
 
 ### Step 4 – Update variables
 1.	Open an elevated PowerShell ISE session
@@ -66,12 +68,12 @@ The following are required to setup the environment. You should gather these var
 
 ### Step 5 – Execute the script & update the scheduled task
 1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
-2.	Once the script completes, open Task Scheduler and update the Run As account to the Admin UserName and Password of the UploadToOMSVM VM.
-
+2.	Once the script completes, open Task Scheduler, right click on the newly created tasks named UsageDataUpload1 & OperationalDataUpload1, click Properties, and click "Change User or Group" (the Run As account) to the Admin UserName and Password of the UploadToOMSVM VM.
+3. 	Click Run. Operational Data will be piushed every 13 minutes now. Usage Data will be pushed at 9am every day.
 
 The scripts sets up 2 scheduled tasks: 
 1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
-2. Upload of operational data every 13 minutes. (Note this is disabled in the current release while the script for usage is fixed)
+2. Upload of operational data every 13 minutes.
 
 The data are uploaded to the OMS workspace you specified in the ARM template. 
 
@@ -88,7 +90,7 @@ Note: For usage data, the script is setup to query and upload usage data reporte
     -  The scheduled task(s) did not get set up. To check, rdp into the machine you deployed using the ARM template and launch **Task Scheduler** from Windows Start menu to check if there is a scheduled task called **UsageDataUpload**. If there isn't, it may help to check the logs for the custom script extension following question 1 step 3 and look for any errors with registering a scheduled task.
     - Unable to access the usage API. To check for this, look in `C:\AZSAdminOMSInt\UsageSummary.json` on the deployed VM, if there are no records here, that means `usagesummaryjson.ps1` failed at one point. 
     - There are no usage data collected. On the deployed VM, if `C:\AZSAdminOMSInt\UsageSummary.json` shows an empty array, that most likely means there were no usage data available in the time frame specified (the day before yesterday).
-    - If there are usage entries in `C:\AZSAdminOMSInt\UsageSummary.json` and the scheduled task exists, then the error likely occurred in `C:\AZSAdminOMSInt\uploadToOMS.ps1`, which uploads usage data to OMS from the json file.
+    - If there are usage entries in `C:\AZSAdminOMSInt\UsageSummary.json` and the sceduled task exists, then the error likely occurred in `C:\AZSAdminOMSInt\uploadToOMS.ps1`, which uploads usage data to OMS from the json file.
 
 # OMS Solution
 
