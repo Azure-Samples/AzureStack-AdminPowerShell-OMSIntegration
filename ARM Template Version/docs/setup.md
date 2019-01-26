@@ -49,50 +49,6 @@ Note that some fields may be pre-populated to a default value, always double-che
 
 This ARM template deploys a VM and runs a PowerShell script using a custom script extension. 
 
-The custom script extension sets up 2 scheduled tasks: 
-
-### Step 1 - Install a VM in the Default Provider Subscription
-1.	Login to admin portal
-2.	Create Windows Server 2016 VM
-3.	Name VM: UploadToOMSVM
-4.	Choose A1 Standard
-5.	Wait for VM deployment to complete
-
-### Step 2 - Prep the VM
-1. Download 2 files from the root of this github project to the c:\ of the VM you just deployed (InvokeMasterScript.ps1 and MasterScript.ps1)
-
-### Step 3 - Get required variables 
-The following are required to setup the environment. You should gather these variables before proceeding to the next step.
-#### DeploymentGUID = “<e.g. 41da4fdd-0e5f-4ecb-85d2-52cb85cd1fca>”
-1. Access the privileged endpoint
-2. Run Get-AzureStackStampInformation
-3. Find and copy the deploymentguid from the output
-#### azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
-1. Update with the Azure Stack Service Admin account email
-#### azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
-1. Update with the Azure Stack Service Admin account password
-#### CloudName ="<e.g. Orlando MTC>"
-1. Update location with the name of your Cloud, this is how most data will pivot in the views
-#### Region = "<e.g. Orlando>"
-1. Update with the region name used when deploying Azure Stack
-#### Fqdn = "<e.g. azurestack.corp.microsoft.com>"
-1. Update with the FQDN name used when deploying Azure Stack
-#### OMSWorkpsaceID= "<ID of your log analytics workspace>"
-1. Update with the OMS/Log Analytics Workspace ID which can be found in the settings pane of your Log Analytics workspace 
-#### OMSSharedKey = "<Log Analytics Workspace Shared Key>"
-1. Update with the OMS/Log Analytics Workspace Shared Key found in the settings pane of your Log Analytics workspace
-#### OEM = "<replace with your hardware vendor name>"
-1. Update with the name of your hardware vendor. Allows for reports in log analytics utilizing the OEM name.
-
-### Step 4 – Update variables
-1.	Open an elevated PowerShell ISE session
-2.	Open the file C:\InvokeMasterScript.ps1
-3.	Update the variables using the data gathered in Step 3
-
-### Step 5 – Execute the script & update the scheduled task
-1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
-2.	Once the script completes, open Task Scheduler, right click on the newly created tasks named UsageDataUpload1 & OperationalDataUpload1, click Properties, and click "Change User or Group" (the Run As account) to the Admin UserName and Password of the UploadToOMSVM VM.
-3. 	Click Run. Operational Data will be piushed every 13 minutes now. Usage Data will be pushed at 9am every day.
 
 The scripts sets up 2 scheduled tasks: 
 1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
