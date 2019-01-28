@@ -55,9 +55,9 @@ The following are required to setup the environment. You should gather these var
 #### Fqdn = "<e.g. azurestack.corp.microsoft.com>"
 1. Update with the FQDN name used when deploying Azure Stack
 #### OMSWorkpsaceID= "<ID of your log analytics workspace>"
-1. Update with the OMS/Log Analytics Workspace ID which can be found in the settings pane of your Log Analytics workspace 
+1. Update with the OMS/Log Analytics Workspace ID which can be found in the Advanced Settings pane of your Log Analytics workspace 
 #### OMSSharedKey = "<Log Analytics Workspace Shared Key>"
-1. Update with the OMS/Log Analytics Workspace Shared Key found in the settings pane of your Log Analytics workspace
+1. Update with the OMS/Log Analytics Workspace Primary Key found in the Advanced Settings pane of your Log Analytics workspace
 #### OEM = "<replace with your hardware vendor name>"
 1. Update with the name of your hardware vendor. Allows for reports in log analytics utilizing the OEM name.
 
