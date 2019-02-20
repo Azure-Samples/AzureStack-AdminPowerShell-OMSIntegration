@@ -88,11 +88,11 @@ $info = @{
 }
 
 $infoJson = ConvertTo-Json $info
-Set-Content -Path "C:\AZSAdminOMSInt\info.txt" -Value $infoJson
+Set-Content -Path "C:\AZSAdminOMSInt\info_$CloudName.txt" -Value $infoJson
 
 #store passwords in txt files. 
 $passwordText = $azureStackAdminPasswordSecureString | ConvertFrom-SecureString
-Set-Content -Path "C:\AZSAdminOMSInt\azspassword.txt" -Value $passwordText
+Set-Content -Path "C:\AZSAdminOMSInt\azspassword_$CloudName.txt" -Value $passwordText
 
 
 #Download Azure Stack Tools VNext
@@ -102,4 +102,4 @@ expand-archive vnext.zip -DestinationPath . -Force
 
 # schedule windows scheduled task
 cd C:\AZSAdminOMSInt
-& .\schedule_usage_upload.ps1
+& .\schedule_usage_upload.ps1 -CloudName $CloudName

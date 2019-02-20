@@ -1,8 +1,14 @@
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    [string] $CloudName   
+)
+
 #Usage Data Upload
 $action = New-ScheduledTaskAction -Execute 'Powershell' `
--Argument '.\asUsageToOMS.ps1' -WorkingDirectory "C:\AZSAdminOMSInt"
+-Argument (".\asUsageToOMS.ps1 -CloudName '{0}'" -f $CloudName) -WorkingDirectory "C:\AZSAdminOMSInt"
 $description = "Daily upload of usage data from azure stack to OMS"
-$taskName = "UsageDataUpload1"
+$taskName = "UsageDataUpload1_$CloudName"
 
 $trigger = New-ScheduledTaskTrigger -Daily -At 9am
 $principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM"
@@ -14,9 +20,9 @@ Register-ScheduledTask -Action $action -Trigger $trigger -TaskName $taskName -Pr
 
 #Operational Data Upload
 $action = New-ScheduledTaskAction -Execute 'Powershell' `
--Argument '.\OpsDataToOMS.ps1' -WorkingDirectory "C:\AZSAdminOMSInt"
+-Argument (".\OpsDataToOMS.ps1 -CloudName '{0}'" -f $CloudName) -WorkingDirectory "C:\AZSAdminOMSInt"
 $description = "Daily upload of operational data from azure stack to OMS"
-$taskName = "OperationalDataUpload1"
+$taskName = "OperationalDataUpload1_$CloudName"
 
 $trigger = New-ScheduledTaskTrigger -once -at (Get-date) -RepetitionInterval (New-TimeSpan -Minutes 13) -RepetitionDuration (New-TimeSpan -Days 9999) 
 $principal = New-ScheduledTaskPrincipal -UserID "NT AUTHORITY\SYSTEM"
