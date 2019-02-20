@@ -8,7 +8,13 @@
     .EXAMPLE
     Export-AzureStackUsage -StartTime 2/15/2017 -EndTime 2/16/2017 -AzureStackDomain azurestack.local -AADDomain mydir.onmicrosoft.com -Granularity Hourly
 #>
-Start-Transcript -Path C:\AZSAdminOMSInt\usagesummaryjson.log
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    [string] $CloudName   
+)
+
+Start-Transcript -Path "C:\AZSAdminOMSInt\usagesummaryjson_$CloudName.log"
 
 function Export-AzureStackUsage {
     Param
@@ -194,9 +200,9 @@ $dayBeforeYesterday = $yesterday.addDays(-1)
 $usageStartTime = $dayBeforeYesterday.ToShortDateString()
 $usageEndTime = $yesterday.ToShortDateString()
 
-$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
+$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info_$CloudName.txt" | ConvertFrom-Json
 $Username = $info.AzureStackAdminUsername
-$Password= Get-Content "C:\AZSAdminOMSInt\azspassword.txt"| ConvertTo-SecureString
+$Password= Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
 $aadCred = New-Object PSCredential($Username, $Password)
 $cloudName2 = $info.CloudName
 $Location2 = $info.Region 

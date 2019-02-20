@@ -1,4 +1,10 @@
-Start-Transcript -Path C:\AZSAdminOMSInt\uploadtoOMS.log
+[CmdletBinding()]
+param(
+    [Parameter(Mandatory = $true)]
+    [string] $CloudName   
+)
+
+Start-Transcript -Path "C:\AZSAdminOMSInt\uploadtoOMS_$CloudName.log"
 Set-ExecutionPolicy Bypass -Force
 Install-Module -Name OMSIngestionAPI -Force
 Install-Module -Name AzureRM.OperationalInsights -Force
@@ -9,7 +15,7 @@ Import-Module -Name Azs.Fabric.Admin -Force
 
 #OMS Authentication Variables
 
-$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info.txt" | ConvertFrom-Json
+$info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info_$CloudName.txt" | ConvertFrom-Json
 $OMSWorkspaceId = $info.OmsWorkspaceID 
 $OMSSharedKey = $info.OmsSharedKey
 
@@ -18,7 +24,7 @@ $Location2 = $info.Region
 $cloudName2 = $info.CloudName
 $State2 = "active"
 $UserName2= $info.AzureStackAdminUsername
-$Password2= Get-Content "C:\AZSAdminOMSInt\azspassword.txt"| ConvertTo-SecureString
+$Password2= Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
 $Credential2=New-Object PSCredential($UserName2,$Password2)
 
 $deploymentGuid = $info.DeploymentGuid
