@@ -68,7 +68,7 @@ The following are required to setup the environment. You should gather these var
 
 ### Step 5 – Execute the script & update the scheduled task
 1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
-2.	Once the script completes, open Task Scheduler, right click on the newly created tasks named UsageDataUpload1 & OperationalDataUpload1, click Properties, and click "Change User or Group" (the Run As account) to the Admin UserName and Password of the UploadToOMSVM VM.
+2.	Once the script completes, open Task Scheduler, right click on the newly created tasks named UsageDataUpload1_<CloudName> & OperationalDataUpload1_<CloudName>, click Properties, and click "Change User or Group" (the Run As account) to the Admin UserName and Password of the UploadToOMSVM VM.
 3. 	Click Run. Operational Data will be piushed every 13 minutes now. Usage Data will be pushed at 9am every day.
 
 The scripts sets up 2 scheduled tasks: 
@@ -78,6 +78,44 @@ The scripts sets up 2 scheduled tasks:
 The data are uploaded to the OMS workspace you specified in the ARM template. 
 
 Note: For usage data, the script is setup to query and upload usage data reported from the day before yesterday each time the scheduled task runs. Note that no usage data will be uploaded if there are no tenant usage during the timeframe specified. 
+
+## Deploy additional Data Collection scheduled tasks to a data collection VM
+### Step 1 - Get required variables 
+The following are required to setup the environment. You should gather these variables before proceeding to the next step.
+#### DeploymentGUID = “<e.g. 41da4fdd-0e5f-4ecb-85d2-52cb85cd1fca>”
+1. Access the privileged endpoint
+2. Run Get-AzureStackStampInformation
+3. Find and copy the deploymentguid from the output
+#### azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
+1. Update with the Azure Stack Service Admin account email
+#### azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
+1. Update with the Azure Stack Service Admin account password
+#### CloudName ="<e.g. Orlando MTC>"
+1. Update location with the name of your Cloud, this is how most data will pivot in the views. Must be Unique with any AzureStack Tasks already running on the system
+#### Region = "<e.g. Orlando>"
+1. Update with the region name used when deploying Azure Stack
+#### Fqdn = "<e.g. azurestack.corp.microsoft.com>"
+1. Update with the FQDN name used when deploying Azure Stack
+#### OMSWorkpsaceID= "<ID of your log analytics workspace>"
+1. Update with the OMS/Log Analytics Workspace ID which can be found in the Advanced Settings pane of your Log Analytics workspace 
+#### OMSSharedKey = "<Log Analytics Workspace Shared Key>"
+1. Update with the OMS/Log Analytics Workspace Primary Key found in the Advanced Settings pane of your Log Analytics workspace
+#### OEM = "<replace with your hardware vendor name>"
+1. Update with the name of your hardware vendor. Allows for reports in log analytics utilizing the OEM name.
+
+### Step 2 – Update variables
+1.	Open an elevated PowerShell ISE session
+2.	Open the file C:\InvokeMasterScript.ps1
+3.	Update the variables using the data gathered in Step 3
+
+### Step 3 – Execute the script & update the scheduled task
+1.	Run the InvokeMasterScript.ps1 now that the variables have been updated.
+2.	Once the script completes, open Task Scheduler, right click on the newly created tasks named UsageDataUpload1_<CloudName> & OperationalDataUpload1_<CloudName>, click Properties, and click "Change User or Group" (the Run As account) to the Admin UserName and Password of the UploadToOMSVM VM.
+3. 	Click Run. Operational Data will be pushed every 13 minutes now. Usage Data will be pushed at 9am every day.
+
+The scripts sets up 2 scheduled tasks: 
+1. Upload of 1-day worth of usage data provided from the Provider Usage API at 9am every day.
+2. Upload of operational data every 13 minutes.
 
 ## Troubleshooting
 1. To verify that data is getting uploaded to OMS environment:
@@ -154,4 +192,4 @@ For specific documentation on the Power BI dashboard template, refer to the [das
 
 ## Limitations
 1. As of 8/9/2017, there is 8mb size limit on the request that PowerBI uses to fetch data from OMS. This restriction is planned to be lifted in the future by the OMS Log Analytics team.
-2. If the restriction persists, one way to increase the number of days of usage data available (by 24x) is pull in daily aggregated usage data from OMS instead of hourly aggregated data. The obvious drawback for this method is that one will not be able to  drilldown to the hourly level on the PowerBI dashboard. 
+2. If the restriction persists, one way to increase the number of days of usage data available (by 24x) is pull in daily aggregated usage data from OMS instead of hourly aggregated data. The obvious drawback for this method is that one will not be able to  drilldown to the hourly level on the PowerBI dashboard.
