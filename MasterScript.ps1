@@ -26,15 +26,15 @@ This script is meant to be called from an ARM template.
 #>
 [CmdletBinding()]
 param(
-    [Parameter(Mandatory = $true)]
+    [Parameter( Mandatory = $true)]
     [string] $DeploymentGuid,
     [Parameter(Mandatory = $true)]
     [string] $OMSWorkspaceID,
     [Parameter(Mandatory = $true)]
     [string] $OMSSharedKey,
-    [Parameter(Mandatory = $true)]
+    [Parameter(ParameterSetName='AdminAccount',Mandatory = $true)]
     [string] $azureStackAdminUsername,
-    [Parameter(Mandatory = $true)]
+    [Parameter(ParameterSetName='AdminAccount',Mandatory = $true)]
     [string] $azureStackAdminPassword,
     [Parameter(Mandatory = $true)]
     [string] $CloudName,
@@ -43,11 +43,19 @@ param(
     [Parameter(Mandatory = $true)]
     [string] $Fqdn,
     [Parameter(Mandatory = $true)]
-    [string] $Oem
+    [string] $Oem,
+    [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
+    [string] $CertificateThumbprint,
+    [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
+    [string] $ApplicationId,
+    [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
+    [string] $TenantId
    
 )
-
-$azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
+if($pscmdlet.ParameterSetName -eq "AdminAccount")
+{
+    $azureStackAdminPasswordSecureString = $azureStackAdminPassword | ConvertTo-SecureString -Force -AsPlainText
+}
 
 cd c:\
 
@@ -74,25 +82,48 @@ Install-Module -Name Azs.Infrastructureinsights.Admin -Force
 Install-Module -Name Azs.Update.Admin -Force
 Install-Module -Name Azs.Fabric.Admin -Force
 
-# store data required by scheduled task in files. 
-$info = @{
-    DeploymentGuid = $DeploymentGuid;
-    CloudName = $CloudName;
-    Region = $Region;
-    Fqdn = $Fqdn;
-    OmsWorkspaceID = $OMSWorkspaceID;
-    OmsSharedKey = $OMSSharedKey;
-    AzureStackAdminUsername = $azureStackAdminUsername;
-    AzureStackAdminPassword = $azureStackAdminPassword;
-    Oem = $Oem;
+
+Switch($pscmdlet.ParameterSetName)
+{
+    "AdminAccount" {
+        # store data required by scheduled task to use AdminAccount in files. 
+        $info = @{
+            ParameterSet = $pscmdlet.ParameterSetName;
+            DeploymentGuid = $DeploymentGuid;
+            CloudName = $CloudName;
+            Region = $Region;
+            Fqdn = $Fqdn;
+            OmsWorkspaceID = $OMSWorkspaceID;
+            OmsSharedKey = $OMSSharedKey;
+            Oem = $Oem;
+            AzureStackAdminUsername = $azureStackAdminUsername;
+            
+        }
+        #store passwords in txt files. 
+        $passwordText = $azureStackAdminPasswordSecureString | ConvertFrom-SecureString
+        Set-Content -Path "C:\AZSAdminOMSInt\azspassword_$CloudName.txt" -Value $passwordText
+        }
+
+    "CertSPN" {
+        # store data required by scheduled task to use CertSPN in files. 
+        $info = @{
+            ParameterSet = $pscmdlet.ParameterSetName;
+            DeploymentGuid = $DeploymentGuid;
+            CloudName = $CloudName;
+            Region = $Region;
+            Fqdn = $Fqdn;
+            OmsWorkspaceID = $OMSWorkspaceID;
+            OmsSharedKey = $OMSSharedKey;
+            Oem = $Oem;
+            CertificateThumbprint = $CertificateThumbprint;
+            ApplicationId = $ApplicationId;
+            TenantId = $TenantId;
+        }
+    }
 }
 
 $infoJson = ConvertTo-Json $info
 Set-Content -Path "C:\AZSAdminOMSInt\info_$CloudName.txt" -Value $infoJson
-
-#store passwords in txt files. 
-$passwordText = $azureStackAdminPasswordSecureString | ConvertFrom-SecureString
-Set-Content -Path "C:\AZSAdminOMSInt\azspassword_$CloudName.txt" -Value $passwordText
 
 
 #Download Azure Stack Tools VNext
