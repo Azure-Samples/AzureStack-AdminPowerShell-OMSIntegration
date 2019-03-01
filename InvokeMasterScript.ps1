@@ -9,13 +9,13 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     -CloudName "<Replace with your Cloud Name, this is how many data points are pivoted in the views>" `
     -Region "<Replace with your region name specified in deploymet>" `
     -Fqdn "<Replace with your FQDN which follows the region name in your URL, eg.. azurestack.corp.microsoft.com>" `
-    -OEM "<Replace with your hardware vendor name>" 
+    -OEM "<Replace with your hardware vendor name>" `
     #Uncomment the below 2 lines if using Admin Credentials to gather data
     #-azureStackAdminUsername "<Replace with your service admin account to access the admin portal/apis>" `
-    #-azureStackAdminPassword "<Replace with your service admin password>" `
+    #-azureStackAdminPassword "<Replace with your service admin password>" 
     #Uncomment the below 3 lines if using a SPN Cert to gather data
-    #-CertificateThumbprint "<Replace with the thumbprint of your cert used for SPN>"
-    #-ApplicationId "<Replace with the ClientID of the SPN>"
+    #-CertificateThumbprint "<Replace with the thumbprint of your cert used for SPN>" `
+    #-ApplicationId "<Replace with the ClientID of the SPN>" `
     #-TenantId "<Replace with the TenantId for the AzureStack>"
 
 
