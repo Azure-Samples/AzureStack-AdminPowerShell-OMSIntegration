@@ -28,7 +28,7 @@ function Export-AzureStackUsage {
         [Parameter(Mandatory = $true)]
         [String]
         $AzureStackDomain ,
-        [Parameter(Mandatory = $true)]
+        [Parameter(Mandatory = $false)]
         [String]
         $AADDomain ,
         [Parameter(Mandatory = $false)]
@@ -201,22 +201,41 @@ $usageStartTime = $dayBeforeYesterday.ToShortDateString()
 $usageEndTime = $yesterday.ToShortDateString()
 
 $info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info_$CloudName.txt" | ConvertFrom-Json
-$Username = $info.AzureStackAdminUsername
-$Password= Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
-$aadCred = New-Object PSCredential($Username, $Password)
+$Authtype = $info.ParameterSet
 $cloudName2 = $info.CloudName
 $Location2 = $info.Region 
 $api = "adminmanagement"
 $AzureStackDomain = $info.Fqdn
 $AzureStackAdminEndPoint = 'https://{0}.{1}.{2}' -f $api, $Location2, $AzureStackDomain
-
-
-$pos = $Username.IndexOf('@')
-$aadDomain = $Username.Substring($pos + 1)
+Switch($Authtype)
+{
+#Set to AdminAccount or not set(old info file)
+    {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
+    $Username2 = $info.AzureStackAdminUsername
+    $Password2 = Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
+    $Credential2 = New-Object PSCredential($Username2, $Password2)
+    }
+#Using CertSPN
+    "CertSPN"{
+    $CertificateThumbprint2 = $info.CertificateThumbprint
+    $ApplicationId2 = $info.ApplicationId
+    $TenantId2 = $info.TenantId
+    }
+}
 
 
 Add-AzureRMEnvironment -Name $cloudName2 -ArmEndpoint $AzureStackAdminEndPoint
-Login-AzureRmAccount -EnvironmentName $cloudName2 -Credential $aadCred
+Switch($Authtype)
+{
+#Set to AdminAccount or not set(old info file)
+    {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
+    Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+    }
+#Using CertSPN
+    "CertSPN"{
+    Add-AzureRmAccount -Environment $cloudName2 -ServicePrincipal -CertificateThumbprint $CertificateThumbprint2 -ApplicationId $ApplicationId2 -TenantId $TenantId2
+    }
+}
 
 # store the result of the usage api records for the time period from the day before yesterday to yesterday in a json file. 
-Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $info.Fqdn -AADDomain $aadDomain  -Region $info.Region -Credential $aadCred -Granularity Hourly -Force -CloudName1 $info.CloudName
+Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $AzureStackDomain  -Region $Location2 -Granularity Hourly -Force -CloudName1 $cloudName2

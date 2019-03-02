@@ -13,6 +13,7 @@ Import-Module -Name Azs.Update.Admin -Force
 Import-Module -Name Azs.Fabric.Admin -Force
 
 
+
 #OMS Authentication Variables
 
 $info = Get-Content -Raw -Path "C:\AZSAdminOMSInt\info_$CloudName.txt" | ConvertFrom-Json
@@ -21,12 +22,26 @@ $OMSSharedKey = $info.OmsSharedKey
 
 
 #Cloud2 Authentication details
+$Authtype = $info.ParameterSet
 $Location2 = $info.Region 
 $cloudName2 = $info.CloudName
 $State2 = "active"
-$UserName2= $info.AzureStackAdminUsername
-$Password2= Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
-$Credential2=New-Object PSCredential($UserName2,$Password2)
+Switch($Authtype)
+{
+#Set to AdminAccount or not set(old info file)
+    {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
+    $UserName2= $info.AzureStackAdminUsername
+    $Password2= Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
+    $Credential2=New-Object PSCredential($UserName2,$Password2)
+    }
+#Using CertSPN
+    "CertSPN"{
+    $CertificateThumbprint2 = $info.CertificateThumbprint
+    $ApplicationId2 = $info.ApplicationId
+    $TenantId2 = $info.TenantId
+    }
+}
+
 
 $deploymentGuid = $info.DeploymentGuid
 $api = "adminmanagement"
@@ -37,7 +52,18 @@ $AzSOEM = $info.Oem
 ##############################################################################################################
 # Get Data via PS for Cloud 2
 Add-AzureRMEnvironment -Name "$cloudName2" -ArmEndpoint $AzureStackAdminEndPoint
-Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+Switch($Authtype)
+{
+#Set to AdminAccount or not set(old info file)
+    {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
+    Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+    }
+#Using CertSPN
+    "CertSPN"{
+    Add-AzureRmAccount -Environment $cloudName2 -ServicePrincipal -CertificateThumbprint $CertificateThumbprint2 -ApplicationId $ApplicationId2 -TenantId $TenantId2
+    }
+}
+
 
 
 ##Get Alerts
