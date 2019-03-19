@@ -109,7 +109,7 @@ function Export-AzureStackUsage {
         'EBF13B9F-B3EA-46FE-BF54-396E93D48AB4' = 'Key Vault transactions'
         '2C354225-B2FE-42E5-AD89-14F0EA302C87' = 'Advanced keys transactions'
     }
-    $recordFile = "UsageSummaryRecord.json"
+    $recordFile = "UsageSummaryRecord_$CloudName1.json"
 
         
     #Output Files to JSON
@@ -238,4 +238,4 @@ Switch($Authtype)
 }
 
 # store the result of the usage api records for the time period from the day before yesterday to yesterday in a json file. 
-Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $AzureStackDomain  -Region $Location2 -Granularity Hourly -Force -CloudName1 $cloudName2
+Export-AzureStackUsage -StartTime $usageStartTime -EndTime $usageEndTime -AzureStackDomain $AzureStackDomain  -Region $Location2 -Granularity Hourly -Force -CloudName1 $cloudName2 -jsonFile "UsageSummary_$cloudName2.json"
