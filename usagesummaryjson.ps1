@@ -118,7 +118,7 @@ function Export-AzureStackUsage {
             Remove-Item -Path $jsonFile -Force
         }
         else {
-            Write-Host "$jsonFile alreday exists use -Force to overwrite"
+            Write-Host "$jsonFile already exists use -Force to overwrite"
             return
         }
     }
@@ -214,6 +214,7 @@ Switch($Authtype)
     $Username2 = $info.AzureStackAdminUsername
     $Password2 = Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
     $Credential2 = New-Object PSCredential($Username2, $Password2)
+    $TenantId2 = $info.TenantId
     }
 #Using CertSPN
     "CertSPN"{
@@ -229,7 +230,12 @@ Switch($Authtype)
 {
 #Set to AdminAccount or not set(old info file)
     {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
+    if($TenantId2){#Use TenantID if one was provided
+        Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2 -Tenant $TenantId2
+    }
+    else{
     Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+    }
     }
 #Using CertSPN
     "CertSPN"{
