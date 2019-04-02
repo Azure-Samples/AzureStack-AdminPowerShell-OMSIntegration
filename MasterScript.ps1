@@ -48,7 +48,8 @@ param(
     [string] $CertificateThumbprint,
     [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
     [string] $ApplicationId,
-    [Parameter(Mandatory = $false)]
+    [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
+    [Parameter(ParameterSetName='AdminAccount',Mandatory = $false)]
     [string] $TenantId
    
 )
