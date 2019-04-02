@@ -77,7 +77,7 @@ Switch($Authtype)
 #
 #################################################################################
 
-$usageSummary = Get-Content -Raw -Path "UsageSummary.json" | ConvertFrom-Json
+$usageSummary = Get-Content -Raw -Path "UsageSummary_$cloudName2.json" | ConvertFrom-Json
 $logType = "Usage"
 $deploymentGuid = $info.DeploymentGuid
 
