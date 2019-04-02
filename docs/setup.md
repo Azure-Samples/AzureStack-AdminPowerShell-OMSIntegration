@@ -44,10 +44,6 @@ The following are required to setup the environment. You should gather these var
 1. Access the privileged endpoint
 2. Run Get-AzureStackStampInformation
 3. Find and copy the deploymentguid from the output
-#### azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
-1. Update with the Azure Stack Service Admin account email
-#### azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
-1. Update with the Azure Stack Service Admin account password
 #### CloudName ="<e.g. Orlando MTC>"
 1. Update location with the name of your Cloud, this is how most data will pivot in the views
 #### Region = "<e.g. Orlando>"
@@ -60,6 +56,16 @@ The following are required to setup the environment. You should gather these var
 1. Update with the OMS/Log Analytics Workspace Primary Key found in the Advanced Settings pane of your Log Analytics workspace
 #### OEM = "<replace with your hardware vendor name>"
 1. Update with the name of your hardware vendor. Allows for reports in log analytics utilizing the OEM name.
+####  TenantId = "<replace with your TenantID>"
+1. Update with the TenantID, this is an optional parameter unless using SPN
+#### CertificateThumbprint = "<replace with thumbprint of cert setup for SPN>"
+1. If using a cert for SPN, update with the certs thumbprint. Optional parameter in place if AzureStackAdmin
+#### ApplicationId = "<Application ID for SPN>"
+1. If using cert for SPN, update with the ApplicationID that was setup for the SPN. Optional parameter in place if AzureStackAdmin
+#### azureStackAdminUsername ="<e.g. Serviceadmin@myazurestackinstance.onmicrosoft.com>"
+1. Update with the Azure Stack Service Admin account email
+#### azureStackAdminPassword = "<e.g. MyAzureStackPassword206!>"
+1. Update with the Azure Stack Service Admin account password
 
 ### Step 4 – Update variables
 1.	Open an elevated PowerShell ISE session

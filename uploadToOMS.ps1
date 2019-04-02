@@ -31,6 +31,7 @@ Switch($Authtype)
     $UserName2= $info.AzureStackAdminUsername
     $Password2= Get-Content "C:\AZSAdminOMSInt\azspassword_$CloudName.txt"| ConvertTo-SecureString
     $Credential2=New-Object PSCredential($UserName2,$Password2)
+    $TenantId2 = $info.TenantId
     }
 #Using CertSPN
     "CertSPN"{
@@ -58,7 +59,12 @@ Switch($Authtype)
 {
 #Set to AdminAccount or not set(old info file)
     {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
+    if($TenantId2){#Use TenantID if one was provided
+        Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2 -Tenant $TenantId2
+    }
+    else{
     Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+    }
     }
 #Using CertSPN
     "CertSPN"{
@@ -71,7 +77,7 @@ Switch($Authtype)
 #
 #################################################################################
 
-$usageSummary = Get-Content -Raw -Path "UsageSummary.json" | ConvertFrom-Json
+$usageSummary = Get-Content -Raw -Path "UsageSummary_$cloudName2.json" | ConvertFrom-Json
 $logType = "Usage"
 $deploymentGuid = $info.DeploymentGuid
 

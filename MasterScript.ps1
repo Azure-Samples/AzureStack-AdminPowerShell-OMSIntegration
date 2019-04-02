@@ -49,6 +49,7 @@ param(
     [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
     [string] $ApplicationId,
     [Parameter(ParameterSetName='CertSPN',Mandatory = $true)]
+    [Parameter(ParameterSetName='AdminAccount',Mandatory = $false)]
     [string] $TenantId
    
 )
@@ -98,6 +99,10 @@ Switch($pscmdlet.ParameterSetName)
             Oem = $Oem;
             AzureStackAdminUsername = $azureStackAdminUsername;
             
+        }
+        if($TenantId)
+        {#If a TenantId was provided add it to the data that will be stored
+            $info.Add("TenantId", $TenantId)
         }
         #store passwords in txt files. 
         $passwordText = $azureStackAdminPasswordSecureString | ConvertFrom-SecureString

@@ -13,9 +13,10 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     #Uncomment the below 2 lines if using Admin Credentials to gather data
     #-azureStackAdminUsername "<Replace with your service admin account to access the admin portal/apis>" `
     #-azureStackAdminPassword "<Replace with your service admin password>" 
-    #Uncomment the below 3 lines if using a SPN Cert to gather data
+    #Uncomment the below 2 lines if using a SPN Cert to gather data
     #-CertificateThumbprint "<Replace with the thumbprint of your cert used for SPN>" `
     #-ApplicationId "<Replace with the ClientID of the SPN>" `
+    #Uncomment the below line if using TenantID as part of sign in of the Management Endpoint, requried if using SPN
     #-TenantId "<Replace with the TenantId for the AzureStack>"
 
 
