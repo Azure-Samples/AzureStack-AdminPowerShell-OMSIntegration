@@ -10,13 +10,13 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted
     -Region "<Replace with your region name specified in deploymet>" `
     -Fqdn "<Replace with your FQDN which follows the region name in your URL, eg.. azurestack.corp.microsoft.com>" `
     -OEM "<Replace with your hardware vendor name>" `
-    #Uncomment the below 2 lines if using Admin Credentials to gather data
-    #-azureStackAdminUsername "<Replace with your service admin account to access the admin portal/apis>" `
+    #Uncomment the below 2 lines and remove this line if using Admin Credentials to gather data otherwise remove this and the below 2 lines
+    #-azureStackAdminUsername "<Replace with your service admin account to access the admin portal/apis>" ` 
     #-azureStackAdminPassword "<Replace with your service admin password>" 
-    #Uncomment the below 2 lines if using a SPN Cert to gather data
+    #Uncomment the below 2 lines and remove this line if using a SPN Cert to gather data otherwise remove this and the below 2 lines
     #-CertificateThumbprint "<Replace with the thumbprint of your cert used for SPN>" `
     #-ApplicationId "<Replace with the ClientID of the SPN>" `
-    #Uncomment the below line if using TenantID as part of sign in of the Management Endpoint, requried if using SPN
+    #Remove this line and Uncomment the below line if using TenantID as part of sign in of the Management Endpoint, requried if using SPN
     #-TenantId "<Replace with the TenantId for the AzureStack>"
 
 
