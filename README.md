@@ -1,7 +1,11 @@
 ---
-services: Azure-Stack
-platforms: PowerShell
-author: chasat-ms & ashika789
+page_type: sample
+languages:
+- powershell
+products:
+- azure
+description: "A common ask from Microsoft Azure Stack customers is how can they integrate the operational and usage data from multiple Azure Stack deployments with OMS."
+urlFragment: AzureStack-AdminPowerShell-OMSIntegration
 ---
 
 # AzureStack-AdminPowerShell-OMSIntegration
