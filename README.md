@@ -1,7 +1,6 @@
 ---
 page_type: sample
 languages:
-- powershell
 products:
 - azure
 description: "A common ask from Microsoft Azure Stack customers is how can they integrate the operational and usage data from multiple Azure Stack deployments with OMS."
