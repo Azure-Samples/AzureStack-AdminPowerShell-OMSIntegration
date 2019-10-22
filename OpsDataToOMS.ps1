@@ -53,24 +53,30 @@ $AzSOEM = $info.Oem
 ##############################################################################################################
 # Get Data via PS for Cloud 2
 Add-AzureRMEnvironment -Name "$cloudName2" -ArmEndpoint $AzureStackAdminEndPoint
+$result = $null
 Switch($Authtype)
 {
 #Set to AdminAccount or not set(old info file)
     {($_ -eq "AdminAccount") -or ($_ -eq $null)}{
     if($TenantId2){#Use TenantID if one was provided
-        Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2 -Tenant $TenantId2
+        $result = Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2 -Tenant $TenantId2
     }
     else{
-    Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
+    $result = Add-AzureRmAccount -EnvironmentName $cloudName2 -Credential $Credential2
     }
     }
 #Using CertSPN
     "CertSPN"{
-    Add-AzureRmAccount -Environment $cloudName2 -ServicePrincipal -CertificateThumbprint $CertificateThumbprint2 -ApplicationId $ApplicationId2 -TenantId $TenantId2
+    $result = Add-AzureRmAccount -Environment $cloudName2 -ServicePrincipal -CertificateThumbprint $CertificateThumbprint2 -ApplicationId $ApplicationId2 -TenantId $TenantId2
     }
 }
 
-
+if(!$result)
+{
+    #Add-AzureRMAccount failed
+    Write-Warning "No Subscription info returned by Add-AzureRMAccount"
+    Return 
+}
 
 ##Get Alerts
 $AllAlerts2= @(Get-AzsAlert -Location $location2| where-object {$_.state -eq "$State2"} | Select-Object AlertId, CreatedTimestamp, FaultTypeId, ImpactedResourceDisplayName, Severity, Title)
