@@ -60,6 +60,10 @@ if($pscmdlet.ParameterSetName -eq "AdminAccount")
 
 cd c:\
 
+# Set TLS 1.2 (3072) as that is the minimum required by Chocolatey.org.
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
+
+
 # install git
 iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
 # refresh the PATH to recognize "choco" command
