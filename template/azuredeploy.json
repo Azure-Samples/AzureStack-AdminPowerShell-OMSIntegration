@@ -56,7 +56,7 @@
         "azureStackAdminUsername": {
             "type": "string",
             "metadata": {
-                "description": "The admin username you used to deploy Azure Stack. e.g. serviceadmin@contoso.onmicrsoft.com"
+                "description": "The admin username you used to deploy Azure Stack. e.g. serviceadmin@contoso.onmicrosoft.com"
             }
         },
         "azureStackAdminPassword": {
