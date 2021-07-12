@@ -83,12 +83,8 @@ Install-PackageProvider -Name NuGet -MinimumVersion 2.8.5.201 -Force
 Set-PsRepository PSGallery -InstallationPolicy Trusted
 Get-Module -ListAvailable | where-Object {$_.Name -like "Azure*"} | Uninstall-Module
 Install-Module -Name AzureRm.BootStrapper -Force
-Install-Module -Name AzureRm.Resources -Force
-Install-Module -Name AzureStack -Force
-Install-Module -Name AzureRM.AzureStackAdmin -Force
-Install-Module -Name Azs.Infrastructureinsights.Admin -Force
-Install-Module -Name Azs.Update.Admin -Force
-Install-Module -Name Azs.Fabric.Admin -Force
+Use-AzureRmProfile -Profile 2019-03-01-hybrid -Force
+Install-Module -Name AzureStack -RequiredVersion 1.8.3
 
 
 Switch($pscmdlet.ParameterSetName)
